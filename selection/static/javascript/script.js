@@ -95,6 +95,38 @@ function enabledNext() {
     document.getElementById("next-image").classList.remove('disabled');
 }
 
+var globalTries=3;
+
+function saveExpResult() {
+    var csrftoken = getCookie('csrftoken');
+    $.ajax({
+        type: 'POST',
+        url: '/sendngen',
+        dataType: 'json',
+        data : {csrfmiddlewaretoken: csrftoken,
+                exp_result: JSON.stringify(testResult)},
+        success: function(response) {
+            $('#submit-uploading').transition('hide');
+            $('#submit-generating').transition('show');
+            var csrftoken = getCookie('csrftoken');
+            $.ajax({
+                type: 'GET',
+                url: '/startiteration',
+                dataType: 'json',
+                data : {csrfmiddlewaretoken: csrftoken}
+            });
+        },
+        error: function(xhr, status, error) {
+            if(globalTries>0) {
+                globalTries = globalTries - 1;
+                saveExpResult();
+            } else {
+                console.log("Error happens!");
+            }
+        }
+    });
+}
+
 function onNextClick() {
     //Check the current value is valid or not.
     $('#obvserve-item').transition('fade down');
@@ -178,14 +210,10 @@ function onNextClick() {
                 $('#experiment-progress').progress('increment');
                 // Show submit dimmer.
                 $('#submit-dimmer').dimmer('show');
-                var csrftoken = getCookie('csrftoken');
-                $.ajax({
-                    type: 'POST',
-                    url: '/sendngen',
-                    dataType: 'json',
-                    data : {csrfmiddlewaretoken: csrftoken,
-                            exp_result: JSON.stringify(testResult)}
-                });
+                //Reset the tries.
+                globalTries=3;
+                // Send the result.
+                saveExpResult();
             }
         }
     });

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
 from . import models
 from selection.models import ExpResult
 
@@ -90,8 +91,5 @@ def sendngen(request):
         exp_result = ExpResult(result=post_data["exp_result"],
                                title='username|date|iteration');
         exp_result.save();
-    return render(request, single_choice_codename + '/index.html',
-                  {'testImage': initial_test_image,
-                    'testList': initial_test_list,
-                    'testHintText': initial_test_text,
-                    'testLabel': q_label});
+        return JsonResponse({'state':'ok'});
+    return start_single_choices(request);
