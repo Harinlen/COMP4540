@@ -2,7 +2,7 @@ from django.shortcuts import render
 from . import models
 from selection.models import ExpResult
 
-single_choice_codename = 'fubuki'
+single_choice_codename = 'akatsuki'
 
 initial_test_image=[ '/static/images/1.png',
                 '/static/images/2.png',
