@@ -28,7 +28,7 @@
                     <div id="rating-group-button-dislike" class="ui button"><i class="thumbs down icon"></i>Dislike</div>
                 </div>
                 <div class="ui form" id="rating-widget-integer-radio">
-                    <div class="inline fields">
+                    <div id="radio-field" class="inline fields">
                         <div class="field">
                             <div class="ui radio checkbox" id="rating-radio-1">
                                 <input name="rating" type="radio">
@@ -64,7 +64,14 @@
                 <div class="ui large heart rating" id="rating-widget-integer" data-rating="5" data-max-rating="10"></div>
                 <div class="ui red range" id="rating-widget-slider"></div>
                 <div class="ui indicating progress" id="reading-count-down" data-value="1" data-total="2">
-                    <div class="bar"></div>
+                <div class="bar"></div>
+                </div>
+            </div>
+            <div class="row centered" id="rating-label-row">
+                <div id="rating-label">
+                    <div id="rating-label-left">Dislike</div>
+                    <div id="rating-label-mid">Normal</div>
+                    <div id="rating-label-right">Like</div>
                 </div>
             </div>
             <div class="row centered" id="next-button-row">
@@ -109,28 +116,9 @@
     <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
     <script type="text/javascript" src="static/javascript/range.js"></script>
     <script type="text/javascript">
-    // var testImage=[ '/static/images/1.png', '/static/images/2.png', '/static/images/3.png', '/static/images/4.png',
-    //                 '/static/images/5.png', '/static/images/6.png', '/static/images/7.png', '/static/images/8.png',
-    //                 '/static/images/9.png','/static/images/10.png','/static/images/11.png','/static/images/12.png',
-    //                '/static/images/13.png','/static/images/14.png','/static/images/15.png','/static/images/16.png',
-    //                '/static/images/17.png','/static/images/18.png','/static/images/19.png','/static/images/20.png'];
-    // var testList=[0,0,0,0,0,
-    //               1,1,1,1,1,
-    //               2,2,2,2,2,
-    //               3,3,3,3,3];
-    // var testHintText=['Do you like this image?', 'Do you like this image?', 'Do you like this image?', 'Do you like this image?',
-    //                'Do you like this image?', 'Do you like this image?', 'Do you like this image?', 'Do you like this image?',
-    //                'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?',
-    //                'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?',
-    //                'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?'];
-    var testImage=[ '/static/images/1.png', '/static/images/2.png', '/static/images/3.png', '/static/images/4.png',
-                    '/static/images/5.png'];
-    var testList=[0,1,2,3,3];
-    var testHintText=['Do you like this image?',
-                      'Do you like this image?',
-                      'How much do you like this image?',
-                      'How much do you like this image?',
-                      'How much do you like this image?'];
+    var testHintText={{ testHintText|safe}};
+    var testImage={{ testImage|safe }};
+    var testList={{ testList|safe }};
     </script>
     <script type="text/javascript" src="static/javascript/script.js"></script>
 </body>

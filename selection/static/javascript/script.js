@@ -29,6 +29,23 @@ var supportedWidgets=["rating-widget-boolean",
 var testIndex;
 var testResult=[];
 
+// using jQuery
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function updateProgress() {
     var currentValue=$('#reading-count-down').progress('get value');
     var totalValue=$('#reading-count-down').progress('get total');
@@ -37,6 +54,11 @@ function updateProgress() {
             animation : 'fade left',
             onComplete : function() {
                 $('#hint-text').transition('fade left');
+                if(testList[testIndex]==2 ||
+                   testList[testIndex]==3 ||
+                   testList[testIndex]==4) {
+                       $('#rating-label-row').transition('fade down');
+                   }
                 $('#'+supportedWidgets[testList[testIndex]]).transition({
                     animation : 'fade right',
                     onComplete : function() {
@@ -66,6 +88,11 @@ function onNextClick() {
     $('#obvserve-item').transition('fade down');
     $('#hint-text').transition('scale');
     $('#'+supportedWidgets[testList[testIndex]]).transition('scale');
+    if(testList[testIndex]==2 ||
+       testList[testIndex]==3 ||
+       testList[testIndex]==4) {
+           $('#rating-label-row').transition('fade down');
+       }
     $('#next-image').transition({
         animation : 'fade up',
         onComplete : function() {
@@ -105,7 +132,6 @@ function onNextClick() {
                 }
             }
             else if(testList[testIndex]==3){
-
                 //Integer heart.
                 imageScore=$("#rating-widget-integer").rating("get rating")*10;
             }
@@ -113,7 +139,12 @@ function onNextClick() {
                 //Slider.
                 imageScore=sliderHelper;
             }
-            testResult.push(imageScore);
+            var imageScoreItem={};
+            imageScoreItem["image"]=testImage[testIndex];
+            imageScoreItem["ui"]=testList[testIndex];
+            imageScoreItem["score"]=imageScore;
+            testResult.push(imageScoreItem);
+            console.log(imageScoreItem);
 
             //Increase the index.
             testIndex=testIndex+1;
@@ -131,7 +162,14 @@ function onNextClick() {
                 $('#experiment-progress').progress('increment');
                 // Show submit dimmer.
                 $('#submit-dimmer').dimmer('show');
-                alert(testResult);
+                var csrftoken = getCookie('csrftoken');
+                $.ajax({
+                    type: 'POST',
+                    url: '/sendngen',
+                    dataType: 'json',
+                    data : {csrfmiddlewaretoken: csrftoken,
+                            exp_result: testResult.toSource()}
+                });
             }
         }
     });
@@ -189,6 +227,7 @@ function startUp() {
     $('#rating-widget-integer-radio').transition('hide');
     $('#hint-text').transition('hide');
     $('#submit-dimmer').dimmer('hide');
+    $('#rating-label-row').transition('hide');
 
     $('#rating-widget-boolean').state({
         text: {

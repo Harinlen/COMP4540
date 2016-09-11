@@ -85,10 +85,6 @@
     width: 350px;
 }
 
-#rating-widget-slider {
-    width: 350px;
-}
-
 #header #btn-menu {
     display:none
 }
@@ -226,13 +222,74 @@
 
 #next-button-row {
     padding: 0px;
-    margin-top: 1.5em;
+    margin-top: 2em;
     min-height: 2em;
     max-height: 2em;
 }
 
 #widget-area {
     height: 40%;
+}
+
+#radio-field {
+    justify-content: space-between;
+}
+
+#rating-label-left {
+    text-align: left;
+    width: 33.3%;
+}
+
+#rating-label-mid {
+    text-align: center;
+    width: 33.3%;
+}
+
+#rating-label-right {
+    text-align: right;
+    width: 33.3%;
+}
+
+.ui.form .inline.fields {
+	margin: 0 0 0em;
+}
+
+.ui.form .inline.fields .field {
+	margin: 0;
+	padding: 0 0 0 0;
+}
+
+#rating-widget-wrapper {
+    width: 20em;
+}
+
+#radio-field {
+    width: 100%;
+}
+
+#rating-widget-integer {
+    width: 23em;
+}
+
+#rating-widget-integer-radio {
+    width: 25em;
+    justify-content: space-between;
+}
+
+#rating-label-row {
+    padding-top: 0px;
+}
+
+#rating-widget-slider {
+    width: 25em;
+}
+
+#rating-label {
+    display:flex;
+    width: 25em;
+    max-width: 25em;
+    min-width: 25em;
+    justify-content: space-between;
 }
 
 #rating-widget-boolean.ui.button.toggle.active, .button.toggle.active, .ui.toggle.buttons .active.button {
