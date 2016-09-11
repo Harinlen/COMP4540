@@ -1,0 +1,137 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Fubuki</title>
+    <link rel="stylesheet" href="static/stylesheet/semantic.min.css">
+    <link rel="stylesheet" href="static/stylesheet/style.css">
+    <link rel="stylesheet" href="static/stylesheet/range.css">
+</head>
+<body>
+    <div id="header">
+        <nav>
+            <li>Mondrian Selection Prototype - Codename: Fubuki</li>
+        </nav>
+    </div>
+    <div id="frame-container">
+        <div id="frame-cell" class="ui grid container">
+            <div id="obvserve-item-row" class="row centered">
+                <img class="ui centered medium image" id="obvserve-item">
+            </div>
+            <div id="hint-text-row" class="row centered">
+                <h1 id="hint-text"></h1>
+            </div>
+            <div id="widget-container-row" class="row centered">
+                <button class="ui toggle button" id="rating-widget-boolean"><i class="heart icon"></i>Like</button>
+                <div class="ui buttons" id="rating-widget-boolean-group">
+                    <div id="rating-group-button-like" class="ui button"><i class="thumbs up icon"></i>Like</div>
+                    <div class="or"></div>
+                    <div id="rating-group-button-dislike" class="ui button"><i class="thumbs down icon"></i>Dislike</div>
+                </div>
+                <div class="ui form" id="rating-widget-integer-radio">
+                    <div class="inline fields">
+                        <div class="field">
+                            <div class="ui radio checkbox" id="rating-radio-1">
+                                <input name="rating" type="radio">
+                                <label>1</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox" id="rating-radio-2">
+                                <input name="rating" type="radio">
+                                <label>2</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox" id="rating-radio-3">
+                                <input name="rating" type="radio" id="radio-rating-3">
+                                <label>3</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox" id="rating-radio-4">
+                                <input name="rating" type="radio">
+                                <label>4</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox" id="rating-radio-5">
+                                <input name="rating" type="radio">
+                                <label>5</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui large heart rating" id="rating-widget-integer" data-rating="5" data-max-rating="10"></div>
+                <div class="ui red range" id="rating-widget-slider"></div>
+                <div class="ui indicating progress" id="reading-count-down" data-value="1" data-total="2">
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <div class="row centered" id="next-button-row">
+                <div class="ui animated button" id="next-image" tabindex="0">
+                    <div class="visible content">Next</div>
+                    <div class="hidden content">
+                        <i class="right arrow icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="experiment-progress" class="ui orange tiny progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+    <div id="instruction-dimmer" class="ui page dimmer">
+        <div class="content" id="instruction-dimmer-content">
+            <div class="center">
+                <h1>Part 1 - Single Image Response Experiment</h1>
+                <p>In the following experiment, you have to rate 20 Mondrian's Neo-Plasticism style paintings. You have to score each image as how much you like it, but not how much artistic value it has.</p>
+                <p>In the experiment, you will use buttons, stars and sliders to score the paintings.</p>
+                <p>Click 'start' when you are ready.</p>
+                <div class="ui animated black button" id="start-experiment" tabindex="0">
+                    <div class="visible content">Start</div>
+                    <div class="hidden content">
+                        <i class="right arrow icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="submit-dimmer" class="ui page dimmer">
+        <div class="ui massive text loader">
+            <p id="submit-uploading">Submitting</p>
+            <p id="submit-generating">Generating Images</p>
+            <p id="submit-downloading">Preparing New Iteration</p>
+        </div>
+    </div>
+    <script type="text/javascript" src="static/javascript/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
+    <script type="text/javascript" src="static/javascript/range.js"></script>
+    <script type="text/javascript">
+    // var testImage=[ '/static/images/1.png', '/static/images/2.png', '/static/images/3.png', '/static/images/4.png',
+    //                 '/static/images/5.png', '/static/images/6.png', '/static/images/7.png', '/static/images/8.png',
+    //                 '/static/images/9.png','/static/images/10.png','/static/images/11.png','/static/images/12.png',
+    //                '/static/images/13.png','/static/images/14.png','/static/images/15.png','/static/images/16.png',
+    //                '/static/images/17.png','/static/images/18.png','/static/images/19.png','/static/images/20.png'];
+    // var testList=[0,0,0,0,0,
+    //               1,1,1,1,1,
+    //               2,2,2,2,2,
+    //               3,3,3,3,3];
+    // var testHintText=['Do you like this image?', 'Do you like this image?', 'Do you like this image?', 'Do you like this image?',
+    //                'Do you like this image?', 'Do you like this image?', 'Do you like this image?', 'Do you like this image?',
+    //                'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?',
+    //                'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?',
+    //                'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?', 'How much do you like this image?'];
+    var testImage=[ '/static/images/1.png', '/static/images/2.png', '/static/images/3.png', '/static/images/4.png',
+                    '/static/images/5.png'];
+    var testList=[0,1,2,3,3];
+    var testHintText=['Do you like this image?',
+                      'Do you like this image?',
+                      'How much do you like this image?',
+                      'How much do you like this image?',
+                      'How much do you like this image?'];
+    </script>
+    <script type="text/javascript" src="static/javascript/script.js"></script>
+</body>
+</html>
