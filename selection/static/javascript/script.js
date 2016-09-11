@@ -57,7 +57,11 @@ function updateProgress() {
                 if(testList[testIndex]==2 ||
                    testList[testIndex]==3 ||
                    testList[testIndex]==4) {
-                       $('#rating-label-row').transition('fade down');
+                       var labelList=testLabel[testIndex];
+                       document.getElementById('rating-label-left').innerHTML=labelList[0];
+                       document.getElementById('rating-label-mid').innerHTML=labelList[1];
+                       document.getElementById('rating-label-right').innerHTML=labelList[2];
+                       $('#rating-label-row').transition('scale');
                    }
                 $('#'+supportedWidgets[testList[testIndex]]).transition({
                     animation : 'fade right',
@@ -84,7 +88,6 @@ function onStartClick() {
 
 function onNextClick() {
     //Check the current value is valid or not.
-
     $('#obvserve-item').transition('fade down');
     $('#hint-text').transition('scale');
     $('#'+supportedWidgets[testList[testIndex]]).transition('scale');
@@ -168,7 +171,7 @@ function onNextClick() {
                     url: '/sendngen',
                     dataType: 'json',
                     data : {csrfmiddlewaretoken: csrftoken,
-                            exp_result: testResult.toSource()}
+                            exp_result: JSON.stringify(testResult)}
                 });
             }
         }

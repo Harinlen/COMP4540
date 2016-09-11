@@ -25,10 +25,10 @@ initial_test_image=[ '/static/images/1.png',
                 '/static/images/19.png',
                 '/static/images/20.png'];
 initial_test_list=[ 0,0,0,0,
-              1,1,1,1,
-              2,2,2,2,
-              3,3,3,3,
-              4,4,4,4];
+                    1,1,1,1,
+                    2,2,2,2,
+                    3,3,3,3,
+                    4,4,4,4];
 initial_test_text=['Do you like this image?',
                  'Do you like this image?',
                  'Do you like this image?',
@@ -49,16 +49,38 @@ initial_test_text=['Do you like this image?',
                  'How much do you like this image?',
                  'How much do you like this image?',
                  'How much do you like this image?'];
+initial_test_label = [[],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      [],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like'],
+                      ['Dislike', 'So-so', 'Like']];
 
 q_image = [ '/static/images/1.png'];
-q_list = [0];
+q_list = [2];
 q_text = ['Test'];
+q_label = [['Dislike', 'Normal', 'Like']];
 
 def start_single_choices(request):
     return render(request, single_choice_codename + '/index.html',
-                  {'testImage': q_image,
-                    'testList': q_list,
-                    'testHintText': q_text});
+                  {'testImage': initial_test_image,
+                    'testList': initial_test_list,
+                    'testHintText': initial_test_text,
+                    'testLabel': initial_test_label});
 
 def sendngen(request):
     # Check the result.
@@ -71,4 +93,5 @@ def sendngen(request):
     return render(request, single_choice_codename + '/index.html',
                   {'testImage': initial_test_image,
                     'testList': initial_test_list,
-                    'testHintText': initial_test_text});
+                    'testHintText': initial_test_text,
+                    'testLabel': q_label});
