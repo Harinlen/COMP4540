@@ -216,8 +216,8 @@
 #widget-container-row {
     padding: 0px;
     margin-top: 2em;
-    min-height: 2em;
-    max-height: 2em;
+    min-height: 2.1em;
+    max-height: 2.1em;
 }
 
 #next-button-row {

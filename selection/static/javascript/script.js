@@ -50,6 +50,11 @@ function updateProgress() {
     var currentValue=$('#reading-count-down').progress('get value');
     var totalValue=$('#reading-count-down').progress('get total');
     if(totalValue==currentValue) {
+        if(testList[testIndex]==1 ||
+           testList[testIndex]==2 ||
+           testList[testIndex]==3) {
+               document.getElementById("next-image").classList.add('disabled');
+           }
         $('#reading-count-down').transition({
             animation : 'fade left',
             onComplete : function() {
@@ -86,6 +91,10 @@ function onStartClick() {
     }, 1000);
 }
 
+function enabledNext() {
+    document.getElementById("next-image").classList.remove('disabled');
+}
+
 function onNextClick() {
     //Check the current value is valid or not.
     $('#obvserve-item').transition('fade down');
@@ -120,18 +129,23 @@ function onNextClick() {
                 //Integer radio.
                 if($('#rating-radio-1').checkbox('is checked')==true) {
                     imageScore=20;
+                    $('#rating-radio-1').checkbox('set unchecked');
                 }
                 else if($('#rating-radio-2').checkbox('is checked')==true) {
                     imageScore=40;
+                    $('#rating-radio-2').checkbox('set unchecked');
                 }
                 else if($('#rating-radio-3').checkbox('is checked')==true) {
                     imageScore=60;
+                    $('#rating-radio-3').checkbox('set unchecked');
                 }
                 else if($('#rating-radio-4').checkbox('is checked')==true) {
                     imageScore=80;
+                    $('#rating-radio-4').checkbox('set unchecked');
                 }
                 else if($('#rating-radio-5').checkbox('is checked')==true) {
                     imageScore=100;
+                    $('#rating-radio-5').checkbox('set unchecked');
                 }
             }
             else if(testList[testIndex]==3){
@@ -147,7 +161,6 @@ function onNextClick() {
             imageScoreItem["ui"]=testList[testIndex];
             imageScoreItem["score"]=imageScore;
             testResult.push(imageScoreItem);
-            console.log(imageScoreItem);
 
             //Increase the index.
             testIndex=testIndex+1;
@@ -186,9 +199,9 @@ function startNewIteration() {
     document.getElementById("rating-group-button-like").classList.remove("red");
     document.getElementById("rating-group-button-dislike").classList.remove("black");
     //  Integer.
-    $("#rating-widget-integer").rating("set rating", 5);
+    $("#rating-widget-integer").rating("set rating", 0);
     //  Slider.
-    $('#rating-widget-slider').range("set value", 50);
+    $('#rating-widget-slider').range("set value", 0);
     //Update the image src.
     document.getElementById("obvserve-item").src=testImage[testIndex];
     document.getElementById("hint-text").innerHTML=testHintText[testIndex];
@@ -238,6 +251,17 @@ function startUp() {
             active : '<i class="heart icon"></i>Like'
         }
     });
+
+    $('#rating-widget-integer').rating('setting', 'clearable', true);
+
+    document.getElementById('rating-group-button-like').addEventListener("click", enabledNext, false);
+    document.getElementById('rating-group-button-dislike').addEventListener("click", enabledNext, false);
+    $('#rating-radio-1').checkbox({onChecked: enabledNext});
+    $('#rating-radio-2').checkbox({onChecked: enabledNext});
+    $('#rating-radio-3').checkbox({onChecked: enabledNext});
+    $('#rating-radio-4').checkbox({onChecked: enabledNext});
+    $('#rating-radio-5').checkbox({onChecked: enabledNext});
+    $('#rating-widget-integer').rating({onRate: enabledNext});
 
     var groupLikeButton=document.getElementById("rating-group-button-like");
     var groupDislikeButton=document.getElementById("rating-group-button-dislike");
