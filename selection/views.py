@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from . import models
 from selection.models import ExpResult
+import hashlib
 
 single_choice_codename = 'akatsuki'
 
@@ -89,9 +90,10 @@ def sendngen(request):
     # Check the result.
     if(request.method=="POST"):
         post_data=request.POST;
+        exp_result=post_data["exp_result"];
         print(post_data["exp_result"]);
-        exp_result = ExpResult(result=post_data["exp_result"],
-                               title='username|date|iteration');
+        exp_result = ExpResult(result=exp_result,
+                               title=hashlib.sha512(exp_result.encode('utf-8')).hexdigest());
         exp_result.save();
         return JsonResponse({'state':'ok'});
     return start_single_choices(request);
