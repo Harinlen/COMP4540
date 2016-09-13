@@ -159,25 +159,14 @@ function onNextClick() {
             }
             else if(testList[testIndex]==2) {
                 //Integer radio.
-                if($('#rating-radio-1').checkbox('is checked')==true) {
-                    imageScore=20;
-                    $('#rating-radio-1').checkbox('set unchecked');
-                }
-                else if($('#rating-radio-2').checkbox('is checked')==true) {
-                    imageScore=40;
-                    $('#rating-radio-2').checkbox('set unchecked');
-                }
-                else if($('#rating-radio-3').checkbox('is checked')==true) {
-                    imageScore=60;
-                    $('#rating-radio-3').checkbox('set unchecked');
-                }
-                else if($('#rating-radio-4').checkbox('is checked')==true) {
-                    imageScore=80;
-                    $('#rating-radio-4').checkbox('set unchecked');
-                }
-                else if($('#rating-radio-5').checkbox('is checked')==true) {
-                    imageScore=100;
-                    $('#rating-radio-5').checkbox('set unchecked');
+                var radioItems=document.getElementById('radio-field').children;
+                for(var i=0; i<radioItems.length; ++i) {
+                    var radioItem=radioItems[i].firstElementChild;
+                    if($('#'+radioItem.getAttribute('id')).checkbox('is checked')) {
+                        $('#'+radioItem.getAttribute('id')).checkbox('set unchecked');
+                        imageScore=Math.ceil((i+1)/radioItems.length*100);
+                        break;
+                    }
                 }
             }
             else if(testList[testIndex]==3){
@@ -284,11 +273,27 @@ function startUp() {
 
     document.getElementById('rating-group-button-like').addEventListener("click", enabledNext, false);
     document.getElementById('rating-group-button-dislike').addEventListener("click", enabledNext, false);
-    $('#rating-radio-1').checkbox({onChecked: enabledNext});
-    $('#rating-radio-2').checkbox({onChecked: enabledNext});
-    $('#rating-radio-3').checkbox({onChecked: enabledNext});
-    $('#rating-radio-4').checkbox({onChecked: enabledNext});
-    $('#rating-radio-5').checkbox({onChecked: enabledNext});
+    var radioField=document.getElementById('radio-field');
+    for(var i=0; i<testRadioMaximum; ++i) {
+        var radioItemName='rating-radio-'+(i+1).toString();
+        var radioItemField=document.createElement('div');
+        radioItemField.classList.add('field');
+        var radioItem=document.createElement('div');
+        radioItem.setAttribute('id', radioItemName);
+        radioItem.classList.add('ui');
+        radioItem.classList.add('radio');
+        radioItem.classList.add('checkbox');
+        var radioInput=document.createElement('input');
+        radioInput.setAttribute('name', 'rating');
+        radioInput.setAttribute('type', 'radio');
+        radioItem.appendChild(radioInput);
+        var radioLabel=document.createElement('label');
+        radioLabel.innerHTML=(i+1).toString();
+        radioItem.appendChild(radioLabel);
+        radioItemField.appendChild(radioItem);
+        radioField.appendChild(radioItemField);
+        $('#'+radioItemName).checkbox({onChecked: enabledNext});
+    }
     $('#rating-widget-integer').rating({onRate: enabledNext});
 
     var groupLikeButton=document.getElementById("rating-group-button-like");

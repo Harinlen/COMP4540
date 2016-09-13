@@ -5,6 +5,7 @@ from selection.models import ExpResult
 
 single_choice_codename = 'akatsuki'
 
+initial_test_maximum_radio = 7;
 initial_test_image=[ '/static/images/1.png',
                 '/static/images/2.png',
                 '/static/images/3.png',
@@ -38,18 +39,18 @@ initial_test_text=['Do you like this image?',
                  'Do you like this image?',
                  'Do you like this image?',
                  'Do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?',
-                 'How much do you like this image?'];
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?',
+                 'Please indicate how much you like the image?'];
 initial_test_label = [[],
                       [],
                       [],
@@ -81,7 +82,8 @@ def start_single_choices(request):
                   {'testImage': initial_test_image,
                     'testList': initial_test_list,
                     'testHintText': initial_test_text,
-                    'testLabel': initial_test_label});
+                    'testLabel': initial_test_label,
+                    'testRadioMaximum': initial_test_maximum_radio});
 
 def sendngen(request):
     # Check the result.
