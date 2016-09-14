@@ -38,6 +38,8 @@ $('#multiple-drive-second').transition('hide');
 var kancolleSelectedCard;
 var kancolleSelectedCount=0;
 var kancolleScoreCounter=[];
+//Hide the kancolle widget.
+$('#multiple-kancolle').transition('hide');
 
 function createRatingWidget() {
     var ratingWidget;

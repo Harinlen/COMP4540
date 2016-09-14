@@ -8,26 +8,26 @@ single_choice_codename = 'akatsuki'
 multiple_choice_codename = 'musashi'
 
 initial_test_maximum_radio = 7;
-initial_test_image=[['static/images/1.png',
-                     'static/images/2.png',
-                     'static/images/3.png',
-                     'static/images/4.png',
-                     'static/images/5.png',
-                     'static/images/6.png',
-                     'static/images/7.png',
-                     'static/images/8.png',
-                     'static/images/9.png',
-                     'static/images/10.png',
-                     'static/images/11.png',
-                     'static/images/12.png',
-                     'static/images/13.png',
-                     'static/images/14.png',
-                     'static/images/15.png',
-                     'static/images/16.png',
-                     'static/images/17.png',
-                     'static/images/18.png',
-                     'static/images/19.png',
-                     'static/images/20.png']];
+initial_test_image=['static/images/1.png',
+                    'static/images/2.png',
+                    'static/images/3.png',
+                    'static/images/4.png',
+                    'static/images/5.png',
+                    'static/images/6.png',
+                    'static/images/7.png',
+                    'static/images/8.png',
+                    'static/images/9.png',
+                    'static/images/10.png',
+                    'static/images/11.png',
+                    'static/images/12.png',
+                    'static/images/13.png',
+                    'static/images/14.png',
+                    'static/images/15.png',
+                    'static/images/16.png',
+                    'static/images/17.png',
+                    'static/images/18.png',
+                    'static/images/19.png',
+                    'static/images/20.png'];
 initial_test_list=[ 0,0,0,0,
                     1,1,1,1,
                     2,2,2,2,
@@ -79,7 +79,7 @@ q_list = [2];
 q_text = ['Test'];
 q_label = [['Dislike', 'Normal', 'Like']];
 
-def start_single_choices(request):
+def start_multiple_choices(request):
     multiple_test_image=['static/images/1.png',
                   'static/images/2.png',
                   'static/images/3.png',
@@ -107,6 +107,21 @@ def start_single_choices(request):
                   'static/images/5.png',
                   'static/images/6.png',
                   'static/images/7.png'];
+    singleIndex=request.GET.get('single');
+    if singleIndex==None:
+        singleIndex=0;
+    else:
+        singleIndex=int(singleIndex);
+        if singleIndex>1:
+            singleIndex=0;
+
+    uiIndex=request.GET.get('ui');
+    if uiIndex==None:
+        uiIndex=0;
+    else:
+        uiIndex=int(uiIndex);
+        if uiIndex>3:
+            uiIndex=0;
     return render(request, multiple_choice_codename + '/index.html',
                   {'testList':multiple_test_image,
                    'testTitle':"'Mondrian Painting #'",
@@ -114,10 +129,10 @@ def start_single_choices(request):
                    'testScoreHintText':"'Score the chosen images'",
                    'testDriveHintText':"'Use A(left), W(mid), D(right) to select the group contains the most image you like'",
                    'testDriveConfirmText':"'Hit the same key again to confirm, or S(back) to cancel'",
-                   'testSingleIndex':1,
-                   'testUIIndex':0});
+                   'testSingleIndex':singleIndex,
+                   'testUIIndex':uiIndex});
 
-def start_s_choices(request):
+def start_single_choices(request):
     return render(request, single_choice_codename + '/index.html',
                   {'testImage': initial_test_image,
                     'testList': initial_test_list,
