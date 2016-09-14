@@ -372,61 +372,40 @@ function updateGrid() {
     var gridSize=testList.length;
     var gridNode=document.getElementById('multiple-grid');
     //Clear the grid data.
-    var gridRow=gridNode.firstElementChild;
-    var gridItem;
-    while(gridRow) {
+    var gridItem=gridNode.firstElementChild;
+    while(gridItem) {
         //Get row first child.
+        gridItem.removeEventListener('click', toggleGridItem, false);
+        gridNode.removeChild(gridItem);
         gridItem=gridRow.firstElementChild;
-        //Remove the item from row.
-        while(gridItem) {
-            gridItem.removeEventListener('click', toggleGridItem, false);
-            gridRow.removeChild(gridItem);
-            gridItem=gridRow.firstElementChild;
-        }
-        //Remove the row.
-        gridNode.removeChild(gridRow);
-        gridRow=gridNode.firstElementChild;
     }
     //Calculate line count.
     gridRowCount=Math.ceil(gridSize/gridColumnCount);
     var indexCounter=0;
-    for(var i=0; i<gridRowCount; ++i) {
-        //Create one row.
-        gridRow=document.createElement('div');
-        gridRow.setAttribute('id', 'grid-row-'+i.toString());
-        gridRow.classList.add('row');
-        for(var j=0; j<gridColumnCount; ++j) {
-            //Check index counter.
-            if(indexCounter==gridSize) {
-                break;
-            }
-            //Create one item.
-            gridItem=document.createElement('div');
-            var gridItemName='multiple-grid-item-'+indexCounter.toString();
-            gridItem.setAttribute('id', gridItemName);
-            gridItem.classList.add('ui');
-            gridItem.classList.add('column');
-            gridItem.classList.add('grid-item');
-            gridItem.classList.add('segment');
-            gridItem.addEventListener('click', toggleGridItem, false);
-            //Create image.
-            var gridImageDiv=document.createElement('div');
-            gridImageDiv.classList.add('ui');
-            gridImageDiv.classList.add('low-normal');
-            gridImageDiv.classList.add('image');
-            gridImageDiv.classList.add('row');
-            gridImageDiv.classList.add('centered');
-            var gridImage=document.createElement('img');
-            gridImage.setAttribute('src', testList[indexCounter]);
-            gridImage.classList.add('low-normal');
-            gridImageDiv.appendChild(gridImage);
-            gridItem.appendChild(gridImageDiv);
-            gridRow.appendChild(gridItem);
-            //Increase counter.
-            ++indexCounter;
-        }
-        //Add row to grid node.
-        gridNode.appendChild(gridRow);
+    for(var indexCounter=0; indexCounter<gridSize; ++indexCounter) {
+        //Create one item.
+        gridItem=document.createElement('div');
+        var gridItemName='multiple-grid-item-'+indexCounter.toString();
+        gridItem.setAttribute('id', gridItemName);
+        gridItem.classList.add('ui');
+        gridItem.classList.add('column');
+        gridItem.classList.add('grid-item');
+        gridItem.classList.add('segment');
+        gridItem.addEventListener('click', toggleGridItem, false);
+        //Create image.
+        var gridImageDiv=document.createElement('div');
+        gridImageDiv.classList.add('ui');
+        gridImageDiv.classList.add('low-normal');
+        gridImageDiv.classList.add('image');
+        gridImageDiv.classList.add('row');
+        gridImageDiv.classList.add('centered');
+        var gridImage=document.createElement('img');
+        gridImage.setAttribute('src', testList[indexCounter]);
+        gridImage.classList.add('low-normal');
+        gridImageDiv.appendChild(gridImage);
+        gridItem.appendChild(gridImageDiv);
+        //Add item to grid node.
+        gridNode.appendChild(gridItem);
     }
     //Upate the title text.
     document.getElementById('title-hint-content').innerHTML=testHintText;
