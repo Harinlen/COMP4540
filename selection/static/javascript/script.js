@@ -82,13 +82,42 @@ function updateProgress() {
     window.setTimeout(updateProgress, 1000);
 }
 
+var downloadedIndex=0;
+function onDownloadSuccess() {
+    ++downloadedIndex;
+    if(downloadedIndex==testImage.length) {
+        //Hide the dimmer.
+        $('#instruction-dimmer').dimmer('hide');
+        //Start test case.
+        window.setTimeout(function(){
+            setTestCases();
+        }, 1000);
+    } else {
+        //Download next image.
+        onDownloadNextImage();
+    }
+}
+
+function onDownloadNextImage() {
+    var downloadedImage=new Image();
+    downloadedImage.onload=onDownloadSuccess;
+    downloadedImage.src=testImage[downloadedIndex];
+    if(img.complete) {
+        onDownloadSuccess();
+    }
+}
+
 function onStartClick() {
-    //Hide the dimmer.
-    $('#instruction-dimmer').dimmer('hide');
-    //Start test case.
-    window.setTimeout(function(){
-        setTestCases();
-    }, 1000);
+    $('#start-experiment').transition({
+        animation : 'scale',
+        onComplete : function(){
+            //Start to load data.
+            $('#start-loading').transition({
+                animation:'scale',
+                onComplete : onDownloadNextImage
+            });
+        }
+    });
 }
 
 function enabledNext() {
@@ -153,7 +182,7 @@ function onNextClick() {
             else if (testList[testIndex]==1) {
                 //Boolean group.
                 var targetWidget=document.getElementById("rating-group-button-like");
-                if(targetWidget.classList.contains("red")) {
+                if(targetWidget.classList.contains("green")) {
                     imageScore=100;
                 }
             }
@@ -188,7 +217,8 @@ function onNextClick() {
             //Check the index.
             if(testIndex<testList.length) {
                 //Increase the progress bar.
-                $('#experiment-progress').progress('increment');
+                $('#experiment-progress').progress('set progress', testIndex);
+                $('#experiment-progress').progress('set active', false);
                 //Reset the count down.
                 $('#reading-count-down').progress('reset');
                 //Start to view next image.
@@ -196,7 +226,8 @@ function onNextClick() {
             }
             else {
                 //Increase the progress bar.
-                $('#experiment-progress').progress('increment');
+                $('#experiment-progress').progress('set progress', testIndex);
+                $('#experiment-progress').progress('set active', false);
                 // Show submit dimmer.
                 $('#submit-dimmer').dimmer('show');
                 //Reset the tries.
@@ -213,8 +244,8 @@ function startNewIteration() {
     //  Boolean button.
     document.getElementById("rating-widget-boolean").classList.remove("active");
     //  Boolean button group.
-    document.getElementById("rating-group-button-like").classList.remove("red");
-    document.getElementById("rating-group-button-dislike").classList.remove("black");
+    document.getElementById("rating-group-button-like").classList.remove("green");
+    document.getElementById("rating-group-button-dislike").classList.remove("red");
     //  Integer.
     $("#rating-widget-integer").rating("set rating", 0);
     //  Slider.
@@ -241,7 +272,8 @@ function setTestCases() {
     //Update the experiment progress bar.
     var testListLength=testList.length;
     $('#experiment-progress').progress({progress: 0,
-                                       total: testListLength});
+                                        total: testListLength,
+                                        active: false});
     //Start new iteration.
     startNewIteration();
 }
@@ -299,12 +331,12 @@ function startUp() {
     var groupLikeButton=document.getElementById("rating-group-button-like");
     var groupDislikeButton=document.getElementById("rating-group-button-dislike");
     groupLikeButton.addEventListener("click", function(){
-        groupDislikeButton.classList.remove("black");
-        groupLikeButton.classList.add("red");
+        groupDislikeButton.classList.remove("red");
+        groupLikeButton.classList.add("green");
     }, false);
     groupDislikeButton.addEventListener("click", function(){
-        groupDislikeButton.classList.add("black");
-        groupLikeButton.classList.remove("red");
+        groupDislikeButton.classList.add("red");
+        groupLikeButton.classList.remove("green");
     }, false);
 
     //Initial start button.
@@ -316,6 +348,7 @@ function startUp() {
     nextButton.addEventListener("click", onNextClick, false);
 
     //Show the instruction dimmer.
+    $('#start-loading').transition('hide');
     $('#instruction-dimmer').dimmer('show');
 }
 

@@ -170,10 +170,6 @@
     opacity:1;
 }
 
-#rating-widget-boolean.active {
-    background: red;
-}
-
 #parallax-fore {
     position:fixed;
     top:0;
@@ -290,19 +286,6 @@
     max-width: 25em;
     min-width: 25em;
     justify-content: space-between;
-}
-
-#rating-widget-boolean.ui.button.toggle.active, .button.toggle.active, .ui.toggle.buttons .active.button {
-	background-color: #FF2733 !important;
-	box-shadow: none !important;
-	text-shadow: none;
-	color: #FFF !important;
-}
-
-#rating-widget-boolean.ui.button.toggle.active:hover {
-	background-color: #FF2733 !important;
-	text-shadow: none;
-	color: #FFF !important;
 }
 
 #hint-text {

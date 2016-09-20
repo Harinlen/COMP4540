@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="static/stylesheet/semantic.min.css">
     <link rel="stylesheet" href="static/stylesheet/style.css">
     <link rel="stylesheet" href="static/stylesheet/range.css">
+    <script type="text/javascript" src="static/javascript/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
 </head>
 <body>
     <div id="header">
@@ -29,36 +31,6 @@
                 </div>
                 <div class="ui form" id="rating-widget-integer-radio">
                     <div id="radio-field" class="inline fields">
-                        <!-- <div class="field">
-                            <div class="ui radio checkbox" id="rating-radio-1">
-                                <input name="rating" type="radio">
-                                <label>1</label>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui radio checkbox" id="rating-radio-2">
-                                <input name="rating" type="radio">
-                                <label>2</label>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui radio checkbox" id="rating-radio-3">
-                                <input name="rating" type="radio" id="radio-rating-3">
-                                <label>3</label>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui radio checkbox" id="rating-radio-4">
-                                <input name="rating" type="radio">
-                                <label>4</label>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui radio checkbox" id="rating-radio-5">
-                                <input name="rating" type="radio">
-                                <label>5</label>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
                 <div class="ui large heart rating" id="rating-widget-integer" data-rating="5" data-max-rating="10"></div>
@@ -91,7 +63,7 @@
     </div>
     <div id="instruction-dimmer" class="ui page dimmer">
         <div class="content" id="instruction-dimmer-content">
-            <div class="center">
+            <div id="instruction-content" class="center">
                 <h1>Part 1 - Single Image Response Experiment</h1>
                 <p>In the following experiment, you have to rate 20 Mondrian's Neo-Plasticism style paintings. You have to score each image as how much you like it, but not how much artistic value it has.</p>
                 <p>In the experiment, you will use buttons, stars and sliders to score the paintings.</p>
@@ -102,6 +74,7 @@
                         <i class="right arrow icon"></i>
                     </div>
                 </div>
+                <div id="start-loading" class="ui active centered inline loader"></div>
             </div>
         </div>
     </div>
@@ -112,8 +85,6 @@
             <p id="submit-downloading">Preparing New Iteration</p>
         </div>
     </div>
-    <script type="text/javascript" src="static/javascript/jquery-2.2.4.min.js"></script>
-    <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
     <script type="text/javascript" src="static/javascript/range.js"></script>
     <script type="text/javascript">
     var testHintText={{ testHintText|safe}};
