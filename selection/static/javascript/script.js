@@ -102,7 +102,7 @@ function onDownloadNextImage() {
     var downloadedImage=new Image();
     downloadedImage.onload=onDownloadSuccess;
     downloadedImage.src=testImage[downloadedIndex];
-    if(img.complete) {
+    if(downloadedImage.complete) {
         onDownloadSuccess();
     }
 }
