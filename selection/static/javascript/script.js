@@ -3,7 +3,7 @@ $.fn.dimmer.settings.closable=false;
 //Initial rating widget.
 $('#rating-widget-integer').rating();
 $('#reading-count-down').progress();
-$('#experiment-progress').progress();
+$('#experiment-progress').progress({showActivity: false});
 $('#rating-widget-integer-radio')
 .form({
     fields: {
@@ -27,6 +27,7 @@ var supportedWidgets=["rating-widget-boolean",
                       "rating-widget-integer",
                       "rating-widget-slider"];
 var testIndex;
+var testDownloadedImages=[];
 var testResult=[];
 
 // using jQuery
@@ -83,9 +84,12 @@ function updateProgress() {
 }
 
 var downloadedIndex=0;
+var downloadedImage;
 function onDownloadSuccess() {
     ++downloadedIndex;
+    testDownloadedImages.push(downloadedImage);
     if(downloadedIndex==testImage.length) {
+        console.log(testDownloadedImages);
         //Hide the dimmer.
         $('#instruction-dimmer').dimmer('hide');
         //Start test case.
@@ -99,12 +103,12 @@ function onDownloadSuccess() {
 }
 
 function onDownloadNextImage() {
-    var downloadedImage=new Image();
-    downloadedImage.onload=onDownloadSuccess;
+    downloadedImage=new Image();
     downloadedImage.src=testImage[downloadedIndex];
     if(downloadedImage.complete) {
         onDownloadSuccess();
     }
+    downloadedImage.onload=onDownloadSuccess;
 }
 
 function onStartClick() {
@@ -217,8 +221,7 @@ function onNextClick() {
             //Check the index.
             if(testIndex<testList.length) {
                 //Increase the progress bar.
-                $('#experiment-progress').progress('set progress', testIndex);
-                $('#experiment-progress').progress('set active', false);
+                $('#experiment-progress').progress('increment');
                 //Reset the count down.
                 $('#reading-count-down').progress('reset');
                 //Start to view next image.
@@ -226,8 +229,7 @@ function onNextClick() {
             }
             else {
                 //Increase the progress bar.
-                $('#experiment-progress').progress('set progress', testIndex);
-                $('#experiment-progress').progress('set active', false);
+                $('#experiment-progress').progress('increment');
                 // Show submit dimmer.
                 $('#submit-dimmer').dimmer('show');
                 //Reset the tries.
@@ -272,8 +274,9 @@ function setTestCases() {
     //Update the experiment progress bar.
     var testListLength=testList.length;
     $('#experiment-progress').progress({progress: 0,
+                                        duration: 200,
                                         total: testListLength,
-                                        active: false});
+                                        showActivity: false});
     //Start new iteration.
     startNewIteration();
 }
