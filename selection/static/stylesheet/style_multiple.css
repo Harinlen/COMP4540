@@ -224,7 +224,7 @@
 }
 
 .kancolle-card {
-    margin: 2px 2px 2px 2px !important;
+    margin: 2px 2px 2px 12px !important;
     width: 30% !important;
     min-width: 30% !important;
     max-width: 30% !important;
@@ -247,7 +247,7 @@
 }
 
 #multiple-drive-second {
-    height: 90% !important;
+    height: 100% !important;
     margin-top: 0px;
     margin-bottom: 0px;
     margin-left: 0px;
@@ -255,6 +255,7 @@
 }
 
 .drive-center-row {
+    padding-bottom: 0px !important;
     display: flex !important;
     justify-content: center !important;
 }
@@ -290,7 +291,7 @@
 }
 
 .selected-item {
-    background: #C0C0C0 !important;
+    background: #909090 !important;
 }
 
 .grid-item-selected {
@@ -317,6 +318,10 @@
 .drive-size {
     width: 32%;
     margin-right: 5px;
+}
+
+.second-drive-size {
+    height: 30%;
 }
 
 .low-normal {

@@ -40,6 +40,9 @@ var kancolleSelectedCount=0;
 var kancolleScoreCounter=[];
 //Hide the kancolle widget.
 $('#multiple-kancolle').transition('hide');
+//-----Codename: Haruna-----
+var submitImageList=[];
+var submitScoreList=[];
 
 function createRatingWidget() {
     var ratingWidget;
@@ -105,7 +108,9 @@ function generalLaunchSubmit() {
 
 function submitListData() {
     //Process data here.
+    console.log(submitImageList);
     //!FIXME: Add codes here.
+
     //Launch submit.
     generalLaunchSubmit();
 }
@@ -149,7 +154,9 @@ function showSecondStageList() {
         itemName='multiple-list-item-'+i.toString();
         var listItem=document.getElementById(itemName);
         if(listItem.classList.contains('selected-item')) {
-            //!FIXME: Add to list code.
+            //Save the images.
+            submitImageList.push(testList[i]);
+            //Add to selected index list.
             listSelectedIndex.push(i);
             //Show the rating widget.
             listItem.classList.remove('selected-item');
@@ -177,6 +184,8 @@ function showSecondStageList() {
             $('#'+itemName).toggle('fold');
         }
     }
+    //Back to top.
+    $('#multiple-container').scrollTop(0);
 }
 
 function updateList() {
@@ -240,6 +249,8 @@ function updateList() {
         $('#multiple-container').transition('fade down');
         $('#next-step').transition('fade up');
         $('#title-hint-content').transition('fade down');
+        //Show the widget.
+        $('#multiple-container').scrollTop(0);
     }, 500);
 }
 
@@ -301,6 +312,7 @@ function showSecondStageGrid() {
     document.getElementById('multiple-container').scrollTop=0;
     //Remove the next click event.
     var nextButton=document.getElementById('next-step');
+    var gridNode=document.getElementById('multiple-grid');
     nextButton.removeEventListener('click', showSecondStageGrid, false);
     nextButton.addEventListener('click', submitGridData, false);
     //Generate widgets.
@@ -340,16 +352,8 @@ function showSecondStageGrid() {
                     onClick: gridSecondNextCheck});
             }
         } else {
-            //Add white dimmer.
-            var blurDimmer=document.createElement('div');
-            var blurDimmerId='multiple-dimmer-'+indexCounter.toString();
-            blurDimmer.setAttribute('id', blurDimmerId);
-            blurDimmer.classList.add('ui');
-            blurDimmer.classList.add('blurring');
-            blurDimmer.classList.add('inverted');
-            blurDimmer.classList.add('dimmer');
-            gridItem.appendChild(blurDimmer);
-            $('#'+blurDimmerId).dimmer('show');
+            //Remove the item from the grid.
+            gridNode.removeChild(gridItem);
         }
     }
     //Reset the counter and disable the button.
@@ -409,13 +413,13 @@ function updateGrid() {
     }
     //Upate the title text.
     document.getElementById('title-hint-content').innerHTML=testHintText;
-    //Show the widget.
-    document.getElementById('multiple-container').scrollTop=0;
     window.setTimeout(function(){
         $('#multiple-grid').transition('show');
         $('#multiple-container').transition('fade down');
         $('#next-step').transition('fade up');
         $('#title-hint-content').transition('fade down');
+        //Show the widget.
+        $('#multiple-container').scrollTop(0);
     }, 500);
 }
 
@@ -819,6 +823,8 @@ function showSecondStageKancolle() {
                 onClick: kancolleSecondNextCheck});
         }
     }
+    //Move back to left most.
+    $('#multiple-kancolle-container').scrollLeft(0);
 }
 
 function kancolleRemoveCard() {
@@ -857,7 +863,11 @@ function kancolleCandidateClick() {
     this.removeEventListener('click', kancolleCandidateClick, false);
     this.classList.add('selected-item');
     //Add a new card.
-    document.getElementById('multiple-kancolle-container').appendChild(kancolleGenCard());
+    var newAddCard=kancolleGenCard();
+    document.getElementById('multiple-kancolle-container').appendChild(newAddCard);
+    var newCardBoundary=newAddCard.getBoundingClientRect();
+    // console.log();
+    $('#multiple-kancolle-container').scrollLeft(newCardBoundary.left + newCardBoundary.width);
     //Hide dimmer.
     $('#multiple-kancolle-selector').dimmer('hide');
     //Increase and update next.
