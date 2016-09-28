@@ -6,6 +6,7 @@ import hashlib
 
 single_choice_codename = 'akatsuki'
 multiple_choice_codename = 'musashi'
+question_codename = 'shimakaze'
 
 initial_test_maximum_radio = 7;
 initial_test_image=['static/images/1.png',
@@ -139,6 +140,28 @@ def start_single_choices(request):
                     'testHintText': initial_test_text,
                     'testLabel': initial_test_label,
                     'testRadioMaximum': initial_test_maximum_radio});
+
+def start_question(request):
+    return render(request, question_codename + '/index.html',
+                  {'questionTypes': [0, 1, 2, 3, 4],
+                   'questionTexts': ["What is your name?",
+                                     "What is your name?",
+                                     "What is your age?",
+                                     "What is your name?",
+                                     "What is your name?"],
+                   'questionExplains': ["Please input your name below.",
+                                        "Please input your name below.",
+                                        "",
+                                        "",
+                                        "Please input your name below."],
+                   'questionSettings': [{"defaultText":"Select your name",
+                                        "values": [["Saki", "0"],
+                                                   ["Nozomi", "1"],
+                                                   ["Eri", "2"]]},
+                                        {"defaultText": "Your name, e.g.: Saki Tojo"},
+                                        {"defaultText": "Age", "min": 12, "max": 18},
+                                        {"values": ["value1", "value2", "value3", "value4"]},
+                                        {"values": ["value1", "value2", "value3", "value4"]}]});
 
 def sendngen(request):
     # Check the result.

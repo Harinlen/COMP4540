@@ -1,0 +1,92 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Shimakaze</title>
+    <link rel="stylesheet" href="static/stylesheet/semantic.min.css">
+    <link rel="stylesheet" href="static/stylesheet/style_question.css">
+    <link rel="stylesheet" href="static/stylesheet/range.css">
+</head>
+<body>
+    <div id="header">
+        <nav>
+            <li>Mondrian Question Prototype - Codename: Shimakaze</li>
+        </nav>
+    </div>
+    <div id="frame-container">
+        <div class="one-filler"></div>
+        <div id="queation-area" class="ui grid row centered">
+            <div class="row">
+                <h1 id="question-text">Question Area</h1>
+            </div>
+            <div class="row">
+                <p id="question-explain">Question explaination text area.</p>
+            </div>
+        </div>
+        <div class="content-filler"></div>
+        <div id="answer-area" class="ui grid row centered">
+            <div class="row centered">
+                <div id="answer-line-text" class="ui input">
+                    <input id="answer-line-text-input" placeholder="" type="text">
+                </div>
+                <p id="answer-range-data">
+                    <span id="answer-range-label"></span>
+                    <span id="answer-range-value"></span>
+                </p>
+                <div id="answer-range" class="ui range"></div>
+                <div id="answer-combo" class="ui selection dropdown">
+                    <i class="dropdown icon"></i>
+                    <div id="answer-combo-default-text" class="default text"></div>
+                    <div id="answer-combo-menu" class="menu">
+                    </div>
+                </div>
+                <div id="answer-radio-list" class="ui form">
+                    <div id="answer-radio-list-area" class="grouped fields">
+                    </div>
+                </div>
+                <div id="answer-checkbox-list" class="ui form">
+                    <div id="answer-checkbox-list-area" class="grouped fields">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="next-button-area" class="ui grid row centered">
+            <div class="row centered">
+                <div id="next-button" class="ui animated button" tabindex="0">
+                    <div class="visible content">Next</div>
+                    <div class="hidden content">
+                        <i class="right arrow icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="one-filler"></div>
+    </div>
+    <div id="submit-dimmer" class="ui page dimmer">
+        <div class="ui massive text loader">
+            <p id="submit-uploading">Submitting</p>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="experiment-progress" class="ui orange tiny progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+    <div id="submit-dimmer" class="ui page dimmer">
+        <div class="ui massive text loader">
+            <p id="submit-uploading">Submitting</p>
+            <p id="submit-generating">Generating Images</p>
+            <p id="submit-downloading">Preparing New Iteration</p>
+        </div>
+    </div>
+    <script type="text/javascript" src="static/javascript/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
+    <script type="text/javascript" src="static/javascript/range.js"></script>
+    <script type="text/javascript">
+    var questionTypes={{ questionTypes|safe }};
+    var questionTexts={{ questionTexts|safe }};
+    var questionExplains={{ questionExplains|safe }};
+    var questionSettings={{ questionSettings|safe }};
+    </script>
+    <script type="text/javascript" src="static/javascript/script_question.js"></script>
+</body>
+</html>
