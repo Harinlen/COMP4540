@@ -2,13 +2,20 @@
 $.fn.dimmer.settings.closable=false;
 //Initial widgets.
 $('#answer-combo').dropdown();
+$('#answer-search-combo').dropdown();
 $('#answer-range').range();
 //Variables.
 var questionWidget="";
 var questionIndex=0;
+//Answer sheet.
+var answerData=[];
+//Helper variables.
+var radioResultHelper="";
 //Hide all the widgets.
 $('#answer-combo').transition('hide');
 document.getElementById('answer-combo').classList.add('hidden_widget');
+$('#answer-search-combo').transition('hide');
+document.getElementById('answer-search-combo').classList.add('hidden_widget');
 $('#answer-line-text').transition('hide');
 $('#answer-range').transition('hide');
 $('#answer-range-data').transition('hide');
@@ -31,12 +38,18 @@ function hideAnswerCombo() {
     document.getElementById('answer-combo').classList.add('hidden_widget');
 }
 
+function hideAnswerSearchCombo() {
+    document.getElementById('answer-search-combo').classList.add('hidden_widget');
+}
+
 function onNextAnimationFinished() {
     //Increase the question index.
     ++questionIndex;
     //Check index.
     if(questionIndex==questionTypes.length) {
         $('#submit-dimmer').dimmer('show');
+        //Start to submit data.
+        //!FIXME: Add codes here.
     } else {
         prepareAndShowQuestion();
     }
@@ -44,20 +57,38 @@ function onNextAnimationFinished() {
 
 function onNextPressed() {
     if(questionType==0) {
+        //Combo box.
+        answerData.push($('#answer-combo').dropdown('get text'));
+        //Hide widget.
         $('#answer-combo').transition({
             animation: 'fade up',
             onComplete: hideAnswerCombo
         });
     } else if(questionType==1){
+        //Text Input
+        answerData.push(document.getElementById('answer-line-text-input').value);
+        //Hide widget.
         $('#answer-line-text').transition('fade up');
     } else if(questionType==2) {
         $('#answer-range').transition('fade up');
         $('#answer-range-data').transition('fade up');
     } else if(questionType==3) {
+        //Radio list.
+        answerData.push(radioResultHelper);
+        //Search all content in the list.
         $('#answer-radio-list').transition('fade up');
     } else if(questionType==4) {
         $('#answer-checkbox-list').transition('fade up');
+    } else if(questionType==5) {
+        //Search Combo box.
+        answerData.push($('#answer-search-combo').dropdown('get text'));
+        //Hide widget.
+        $('#answer-search-combo').transition({
+            animation: 'fade up',
+            onComplete: hideAnswerSearchCombo
+        });
     }
+    console.log(answerData);
     //Hide the question area, submit button.
     $('#next-button-area').transition('fade up');
     $('#queation-area').transition({
@@ -82,6 +113,16 @@ function inputBoxNextCheck() {
     } else {
         nextButton.classList.remove('disabled');
     }
+}
+
+function radioNextCheck(event) {
+    //Set the radio helper text.
+    var targetElement = event.target || event.srcElement;
+    //Get the attribute.
+    radioResultHelper=targetElement.getAttribute('value');
+    //Enable the next button.
+    var nextButton=document.getElementById('next-button');
+    nextButton.classList.remove('disabled');
 }
 
 function prepareAndShowQuestion() {
@@ -137,13 +178,13 @@ function prepareAndShowQuestion() {
         var candidateList=questionSetting["values"];
         var listArea=document.getElementById('answer-radio-list-area');
         while(listArea.firstChild){
-            listArea.firstChild.removeEventListener('click', generalNextCheck, false);
+            listArea.firstChild.removeEventListener('click', radioNextCheck, false);
             listArea.removeChild(listArea.firstChild);
         }
         for(var i=0; i<candidateList.length; ++i) {
             var candidateField=document.createElement('div');
             candidateField.classList.add('field');
-            candidateField.addEventListener('click', generalNextCheck, false);
+            candidateField.addEventListener('click', radioNextCheck, false);
             var candidateItem=document.createElement('div');
             candidateItem.classList.add('ui');
             candidateItem.classList.add('radio');
@@ -151,6 +192,7 @@ function prepareAndShowQuestion() {
             var candidateInput=document.createElement('input');
             candidateInput.setAttribute('name', 'question-field');
             candidateInput.setAttribute('type', 'radio');
+            candidateInput.setAttribute('value', candidateList[i]);
             candidateItem.appendChild(candidateInput);
             var candidateValue=document.createElement('label');
             candidateValue.innerHTML=candidateList[i];
@@ -185,6 +227,29 @@ function prepareAndShowQuestion() {
             listArea.appendChild(candidateField);
         }
         $('#answer-checkbox-list').transition('fade up');
+    } else if(questionType==5) {
+        //Set the question widget.
+        questionWidget="answer-search-combo";
+        document.getElementById('answer-search-combo-default-text').innerHTML=questionSetting["defaultText"];
+        //Remove all the current combo element child.
+        var comboElement=document.getElementById('answer-search-combo-menu');
+        while(comboElement.firstChild) {
+            comboElement.firstChild.removeEventListener("click", generalNextCheck, false);
+            comboElement.removeChild(comboElement.firstChild);
+        }
+        var itemList=questionSetting["values"];
+        for(var i=0; i<itemList.length; ++i) {
+            var current_item=itemList[i];
+            var current_element=document.createElement('div');
+            current_element.classList.add('item');
+            current_element.setAttribute('data-value', current_item[1]);
+            current_element.innerHTML=current_item[0];
+            current_element.addEventListener("click", generalNextCheck, false);
+            comboElement.appendChild(current_element);
+        }
+        //Show the answer combo.
+        document.getElementById('answer-search-combo').classList.remove('hidden_widget');
+        $('#answer-search-combo').transition('fade up');
     }
     //Show the question area, submit button.
     $('#next-button-area').transition('fade up');
