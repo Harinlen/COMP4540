@@ -67,9 +67,18 @@
         </div>
         <div class="one-filler"></div>
     </div>
-    <div id="submit-dimmer" class="ui page dimmer">
-        <div class="ui massive text loader">
-            <p id="submit-uploading">Submitting</p>
+    <div id="instruction-dimmer" class="ui page dimmer">
+        <div class="content" id="instruction-dimmer-content">
+            <div id="instruction-content" class="center">
+                <h1 id="instruction-title"></h1>
+                <p id="instruction-text"></p>
+                <div class="ui animated black button" id="start-experiment" tabindex="0">
+                    <div class="visible content">Start</div>
+                    <div class="hidden content">
+                        <i class="right arrow icon"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div id="footer">
@@ -88,6 +97,8 @@
     <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
     <script type="text/javascript" src="static/javascript/range.js"></script>
     <script type="text/javascript">
+    var questionInstructionTitle={{ questionInstructionTitle|safe }};
+    var questionInstructionText={{ questionInstructionText|safe }};
     var questionTypes={{ questionTypes|safe }};
     var questionTexts={{ questionTexts|safe }};
     var questionExplains={{ questionExplains|safe }};

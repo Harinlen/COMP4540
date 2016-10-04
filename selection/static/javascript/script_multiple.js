@@ -29,6 +29,7 @@ $('#multiple-grid').transition('hide');
 //-----Codename: Nagato-----
 var driveLevel=1;
 var drivePreviousChoose=1;
+var driveChoseBased=0;
 var driveChoose=[];
 var driveSecondAnime='';
 //Hide the drive widget.
@@ -121,7 +122,24 @@ function submitData() {
                 iteration: testIteration,
                 exp_result: JSON.stringify(submitPackage)},
         success: function(response) {
-            //!FIXME: Add codes here.
+            $.ajax({
+                type: 'POST',
+                url: '/generateiteration',
+                dataType: 'json',
+                data : {
+                    csrfmiddlewaretoken: csrftoken,
+                    uid: uid,
+                    iteration: testIteration,
+                    image_gene: JSON.stringify(imageGene),
+                    exp_result: JSON.stringify(submitPackage)},
+                success: function(response) {
+                    if(response['state']=='complete') {
+                        window.location.href='about:blank';
+                    } else {
+                        window.location.href="/multiple?uid="+response['uid']+"&iteration="+response['iteration'];
+                    }
+                }
+            });
         }
     });
 }
@@ -535,6 +553,9 @@ function onSecondDriveKeyConfirm(event) {
                     onComplete : hideSecondAndSubmit
                 });
                 driveSecondAnime='fade right';
+                for(i=0; i<3; ++i) {
+                    submitScoreList[i]=70;
+                }
             } else if(keyAscII==1) {
                 $('#drive-second-column-dimmer-0').dimmer('hide');
                 $('#drive-second-column-dimmer-2').dimmer('hide');
@@ -546,6 +567,9 @@ function onSecondDriveKeyConfirm(event) {
                     onComplete : hideSecondAndSubmit
                 });
                 driveSecondAnime='scale';
+                for(i=3; i<6; ++i) {
+                    submitScoreList[i]=70;
+                }
             } else if(keyAscII==2) {
                 $('#drive-second-column-dimmer-0').dimmer('hide');
                 $('#drive-second-column-dimmer-1').dimmer('hide');
@@ -557,6 +581,9 @@ function onSecondDriveKeyConfirm(event) {
                     onComplete : hideSecondAndSubmit
                 });
                 driveSecondAnime='fade left';
+                for(i=6; i<9; ++i) {
+                    submitScoreList[i]=70;
+                }
             }
         } else {
             //Hide all the dimmer.
@@ -676,8 +703,9 @@ function onDriveKeyConfirm(event) {
                     onComplete : hideAndStartSecond
                 });
                 driveSecondAnime='fade right';
+                driveChoseBased=0;
                 for(var i=0; i<9; ++i) {
-                    submitScoreWidgetList.push(testList[i]);
+                    submitImageList.push(testList[i]);
                     submitScoreList.push(30);
                 }
             } else if(keyAscII==1) {
@@ -691,8 +719,9 @@ function onDriveKeyConfirm(event) {
                     onComplete : hideAndStartSecond
                 });
                 driveSecondAnime='scale';
+                driveChoseBased=9;
                 for(var i=9; i<18; ++i) {
-                    submitScoreWidgetList.push(testList[i]);
+                    submitImageList.push(testList[i]);
                     submitScoreList.push(30);
                 }
             } else if(keyAscII==2) {
@@ -706,8 +735,9 @@ function onDriveKeyConfirm(event) {
                     onComplete : hideAndStartSecond
                 });
                 driveSecondAnime='fade left';
+                driveChoseBased=18;
                 for(var i=18; i<27; ++i) {
-                    submitScoreWidgetList.push(testList[i]);
+                    submitImageList.push(testList[i]);
                     submitScoreList.push(30);
                 }
             }

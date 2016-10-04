@@ -134,7 +134,8 @@ function saveExpResult() {
                 data : {csrfmiddlewaretoken: csrftoken,
                         uid: uid,
                         exp_result: JSON.stringify(testResult),
-                        iteration: 0},
+                        image_gene: JSON.stringify(imageGene),
+                        iteration: -1},
                 success: function(response) {
                         window.location.href="/multiple?uid="+response['uid']+"&iteration="+response['iteration'];
                 }

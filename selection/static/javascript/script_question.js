@@ -8,6 +8,7 @@ $('#answer-range').range();
 var questionWidget="";
 var questionIndex=0;
 var globalTries=5;
+var sliderHelper=0;
 //Answer sheet.
 var answerData=[];
 //CSRF token
@@ -30,11 +31,13 @@ $('#queation-area').transition('hide');
 
 //Update range function.
 function updateAnswerValue(value) {
-  $('#answer-range-value').html(value);
-
-  //Disable the next button.
-  var nextButton=document.getElementById('next-button');
-  nextButton.classList.remove('disabled');
+    //Set the value.
+    $('#answer-range-value').html(value);
+    //Save the value to helper.
+    sliderHelper=value;
+    //Disable the next button.
+    var nextButton=document.getElementById('next-button');
+    nextButton.classList.remove('disabled');
 }
 
 function hideAnswerCombo() {
@@ -103,6 +106,9 @@ function onNextPressed() {
         //Hide widget.
         $('#answer-line-text').transition('fade up');
     } else if(questionType==2) {
+        //Slider.
+        answerData.push(sliderHelper);
+        //Hide widget.
         $('#answer-range').transition('fade up');
         $('#answer-range-data').transition('fade up');
     } else if(questionType==3) {
@@ -205,6 +211,7 @@ function prepareAndShowQuestion() {
             onChange: updateAnswerValue});
         $('#answer-range').transition('fade up');
         $('#answer-range-data').transition('fade up');
+        document.getElementById('answer-range-label').innerHTML=questionSetting["label"];
     } else if(questionType==3) {
         questionWidget="answer-radio-list";
         var candidateList=questionSetting["values"];
@@ -307,6 +314,14 @@ $(document).ready(function() {
                                         duration: 200,
                                         total: questionTypes.length,
                                         showActivity: false});
-    //Start the first question.
-    prepareAndShowQuestion();
+    //Show the instruction.
+    document.getElementById('instruction-title').innerHTML=questionInstructionTitle;
+    document.getElementById('instruction-text').innerHTML=questionInstructionText;
+    $('#instruction-dimmer').dimmer('show');
+    //Combine the button click event.
+    document.getElementById('start-experiment').addEventListener('click',
+    function() {
+        $('#instruction-dimmer').dimmer('hide');
+        window.setTimeout(prepareAndShowQuestion, 500);
+    }, false);
 });
