@@ -4,6 +4,7 @@ from . import models
 from selection.models import ExpResult
 from enum import Enum
 from PIL import Image
+from django.views.decorators.csrf import csrf_exempt
 import json
 import hashlib
 
@@ -22,11 +23,12 @@ class Question_Type(Enum):
 multiple_ui    =[0, 0, 1, 1, 2, 2, 3, 3];
 multiple_single=[0, 1, 0, 1, 0 ,1, 0, 1];
 
+@csrf_exempt
 def render_question_page(request, questionMap):
     return render(request, question_codename + '/index.html',
                   questionMap);
 
-
+@csrf_exempt
 def start_multiple_choices(request):
     uid=request.GET.get('uid');
     if uid==None:
@@ -87,8 +89,11 @@ def start_multiple_choices(request):
                    'testDriveHintText':"'Use A(left), W(mid), D(right) to select the group contains the most image you like'",
                    'testDriveConfirmText':"'Hit the same key again to confirm, or S(back) to cancel'",
                    'testSingleIndex':singleIndex,
-                   'testUIIndex':uiIndex});
+                   'testUIIndex':uiIndex,
+                   'testIteration':iteration_num,
+                   'uid':uid});
 
+@csrf_exempt
 def start_initial_test(request):
     # Check request.
     uid=request.COOKIES.get('uid', 'none');
@@ -172,6 +177,7 @@ def add_question(questionMap, questionType, questionText, questionExplain, quest
     questionMap['questionExplains'].append(questionExplain);
     questionMap['questionSettings'].append(questionSetting);
 
+@csrf_exempt
 def start_question(request):
     questionMap={'questionTypes': [],
                  'questionTexts': [],
@@ -602,6 +608,7 @@ def start_question(request):
                  {"values": ["Yes", "No"]});
     return render_question_page(request, questionMap);
 
+@csrf_exempt
 def generate_iteration_images(request):
     # Check the result.
     if(request.method=="POST"):
@@ -644,6 +651,7 @@ def generate_iteration_images(request):
                              'iteration':iteration});
     return start_question;
 
+@csrf_exempt
 def send_question_result(request):
     # Check the result.
     if(request.method=="POST"):
@@ -662,6 +670,7 @@ def send_question_result(request):
         return JsonResponse({'state':'ok', 'uid':uid});
     return start_question;
 
+@csrf_exempt
 def send_initial(request):
     # Check the result.
     if(request.method=="POST"):
@@ -678,3 +687,23 @@ def send_initial(request):
             exp_result.save();
         return JsonResponse({'state':'ok', 'uid':uid});
     return start_single_choices(request);
+
+@csrf_exempt
+def send_iteration(request):
+    # Check the result.
+    if(request.method=="POST"):
+        post_data=request.POST;
+        print(post_data);
+        exp_result=post_data["exp_result"];
+        uid=post_data["uid"];
+        iteration=post_data["iteration"];
+        title=uid+"|iteration-"+iteration;
+        searchList=ExpResult.objects.filter(title=title);
+        if(len(searchList)!=0):
+            searchList[0].result=exp_result;
+            searchList[0].save();
+        else:
+            exp_result = ExpResult(result=exp_result, title=title);
+            exp_result.save();
+        return JsonResponse({'state':'ok', 'uid':uid});
+    return start_multiple_choices(request);

@@ -42,14 +42,17 @@ var kancolleScoreCounter=[];
 $('#multiple-kancolle').transition('hide');
 //-----Codename: Haruna-----
 var submitImageList=[];
+var submitScoreWidgetList=[];
 var submitScoreList=[];
+var csrftoken;
 
-function createRatingWidget() {
+function createRatingWidget(ratingWidgetName) {
     var ratingWidget;
     //Star rating.
     if(testSingleIndex==0) {
         //-----Codename: Kongo-----
         ratingWidget=document.createElement('div');
+        ratingWidget.setAttribute('id', ratingWidgetName);
         ratingWidget.classList.add('ui');
         ratingWidget.classList.add('heart');
         ratingWidget.classList.add('rating');
@@ -58,6 +61,7 @@ function createRatingWidget() {
     } else if(testSingleIndex==1) {
         //-----Codename: Hiei-----
         ratingWidget=document.createElement('div');
+        ratingWidget.setAttribute('id', ratingWidgetName);
         ratingWidget.classList.add('ui');
         ratingWidget.classList.add('red');
         ratingWidget.classList.add('range');
@@ -88,12 +92,38 @@ function toggleListItem() {
 }
 
 function submitData() {
+    //Get csrftoken.
+    csrftoken = Cookies.get('csrftoken');
     //Show the submit dimmer.
     $('#multiple-list').transition('hide');
     $('#multiple-grid').transition('hide');
     $('#multiple-drive-second').transition('hide');
     $('#submit-dimmer').dimmer('show');
-    //!FIXME: Add post request here.
+    //Construct the object.
+    var submitPackage={};
+    submitPackage["ui"]=testUIIndex;
+    submitPackage["iteration"]=testIteration;
+    //Construct score package.
+    var submitData=[];
+    for(var i=0; i<submitImageList.length; ++i) {
+        var submitItemData={};
+        submitItemData['image']=submitImageList[i];
+        submitItemData['score']=submitScoreList[i];
+        submitData.push(submitItemData);
+    }
+    submitPackage["result"]=submitData;
+    $.ajax({
+        type: 'POST',
+        url: '/saveiteration',
+        dataType: 'json',
+        data : {csrfmiddlewaretoken: csrftoken,
+                uid: uid,
+                iteration: testIteration,
+                exp_result: JSON.stringify(submitPackage)},
+        success: function(response) {
+            //!FIXME: Add codes here.
+        }
+    });
 }
 
 function generalLaunchSubmit() {
@@ -107,19 +137,33 @@ function generalLaunchSubmit() {
 }
 
 function submitListData() {
-    //Process data here.
-    console.log(submitImageList);
-    //!FIXME: Add codes here.
-
     //Launch submit.
     generalLaunchSubmit();
+}
+
+function secondSliderValue(itemValue) {
+    var imageIndex=submitScoreWidgetList.indexOf(this.name);
+    //Save the score.
+    submitScoreList[imageIndex]=itemValue;
 }
 
 function listSecondNextCheck(itemValue) {
     //Check this.
     var itemName=itemValue;
-    if(!(itemName instanceof String)) {
-        itemName=this;
+    if(this.nodeType && this.nodeType==1) {
+        //Rating widget.
+        var widgetName=this.getAttribute('id');
+        itemName=widgetName;
+        var imageIndex=submitScoreWidgetList.indexOf(this.getAttribute('id'));
+        //Get the widget score.
+        var widgetValue=$('#'+widgetName).rating('get rating');
+        //Save the score.
+        submitScoreList[imageIndex]=widgetValue;
+    } else {
+        //It must be an jQ object, means it is a slider widget.
+        // console.log(submitScoreWidgetList.indexOf(this.name));
+        //Change the item name to store the div.
+        itemName=this.name;
     }
     //Check the list.
     if(listScoreCounter.indexOf(itemName)==-1) {
@@ -138,6 +182,8 @@ function showSecondStageList() {
     //Reset the selected index.
     listSelectedIndex=[];
     listScoreCounter=[];
+    //Reset the submit score widget list.
+    submitScoreWidgetList=[];
     //Scrll back to top.
     document.getElementById('multiple-container').scrollTop=0;
     //Remove the next click event.
@@ -156,6 +202,8 @@ function showSecondStageList() {
         if(listItem.classList.contains('selected-item')) {
             //Save the images.
             submitImageList.push(testList[i]);
+            //Add one empty score to submit widget list.
+            submitScoreList.push(0);
             //Add to selected index list.
             listSelectedIndex.push(i);
             //Show the rating widget.
@@ -163,11 +211,11 @@ function showSecondStageList() {
             listItem.removeEventListener('click', toggleListItem, false);
             //Get the item content.
             var itemContent=document.getElementById('multiple-list-item-content-'+i.toString());
-            //Create the rating widget.
-            var ratingWidget=createRatingWidget();
             //Set id.
             var ratingWidgetName='multiple-list-rating-'+i.toString();
-            ratingWidget.setAttribute('id', ratingWidgetName);
+            //Create the rating widget.
+            var ratingWidget=createRatingWidget(ratingWidgetName);
+            submitScoreWidgetList.push(ratingWidgetName);
             //Add widget the list item.
             itemContent.appendChild(ratingWidget);
             if(testSingleIndex==0){
@@ -178,7 +226,9 @@ function showSecondStageList() {
                     min:0,
                     max:100,
                     start:0,
-                    onClick: listSecondNextCheck});
+                    onClick: listSecondNextCheck,
+                    onChange: secondSliderValue
+                });
             }
         } else {
             $('#'+itemName).toggle('fold');
@@ -255,8 +305,6 @@ function updateList() {
 }
 
 function submitGridData() {
-    //Process data here.
-    //!FIXME: Add codes here.
     //Launch submit.
     generalLaunchSubmit();
 }
@@ -286,8 +334,18 @@ function toggleGridItem() {
 function gridSecondNextCheck(recordValue) {
     //Check this.
     var recordName=recordValue;
-    if(!(recordName instanceof String)) {
-        recordName=this;
+    if(this.nodeType && this.nodeType==1) {
+        //Rating widget.
+        var widgetName=this.getAttribute('id');
+        recordName=widgetName;
+        var imageIndex=submitScoreWidgetList.indexOf(this.getAttribute('id'));
+        //Save the score.
+        submitScoreList[imageIndex]=recordValue;
+    } else {
+        //It must be an jQ object, means it is a slider widget.
+        // console.log(submitScoreWidgetList.indexOf(this.name));
+        //Change the item name to store the div.
+        recordName=this.name;
     }
     //Get the clicked name.
     if(gridScoreCounter.indexOf(recordName)==-1) {
@@ -308,6 +366,7 @@ function showSecondStageGrid() {
     var gridItem;
     //Reset the counter.
     gridSelectedCount=0;
+    submitScoreList=[];
     //Scrll back to top.
     document.getElementById('multiple-container').scrollTop=0;
     //Remove the next click event.
@@ -324,6 +383,9 @@ function showSecondStageGrid() {
         if(gridItem.classList.contains('selected-item')) {
             //Increase the counter.
             ++gridSelectedCount;
+            //Save the images.
+            submitImageList.push(testList[indexCounter]);
+            submitScoreList.push(0);
             //Remove the selected item background.
             gridItem.classList.remove('selected-item');
             gridItem.classList.add('grid-item-selected');
@@ -333,11 +395,11 @@ function showSecondStageGrid() {
             ratingRow.classList.add('row');
             ratingRow.classList.add('centered');
             ratingRow.classList.add('grid-rating-container');
-            //Create the rating widget.
-            var ratingWidget=createRatingWidget();
             //Set id.
-            var ratingWidgetName='multiple-list-rating-'+indexCounter.toString();
-            ratingWidget.setAttribute('id', ratingWidgetName);
+            var ratingWidgetName='multiple-grid-rating-'+indexCounter.toString();
+            submitScoreWidgetList.push(ratingWidgetName)
+            //Create the rating widget.
+            var ratingWidget=createRatingWidget(ratingWidgetName);
             ratingRow.appendChild(ratingWidget);
             //Add widget the list item.
             gridItem.appendChild(ratingRow);
@@ -349,7 +411,9 @@ function showSecondStageGrid() {
                     min:0,
                     max:100,
                     start:0,
-                    onClick: gridSecondNextCheck});
+                    onClick: gridSecondNextCheck,
+                    onChange: secondSliderValue
+                });
             }
         } else {
             //Remove the item from the grid.
@@ -612,6 +676,10 @@ function onDriveKeyConfirm(event) {
                     onComplete : hideAndStartSecond
                 });
                 driveSecondAnime='fade right';
+                for(var i=0; i<9; ++i) {
+                    submitScoreWidgetList.push(testList[i]);
+                    submitScoreList.push(30);
+                }
             } else if(keyAscII==1) {
                 $('#drive-column-dimmer-0').dimmer('hide');
                 $('#drive-column-dimmer-2').dimmer('hide');
@@ -623,6 +691,10 @@ function onDriveKeyConfirm(event) {
                     onComplete : hideAndStartSecond
                 });
                 driveSecondAnime='scale';
+                for(var i=9; i<18; ++i) {
+                    submitScoreWidgetList.push(testList[i]);
+                    submitScoreList.push(30);
+                }
             } else if(keyAscII==2) {
                 $('#drive-column-dimmer-0').dimmer('hide');
                 $('#drive-column-dimmer-1').dimmer('hide');
@@ -634,6 +706,10 @@ function onDriveKeyConfirm(event) {
                     onComplete : hideAndStartSecond
                 });
                 driveSecondAnime='fade left';
+                for(var i=18; i<27; ++i) {
+                    submitScoreWidgetList.push(testList[i]);
+                    submitScoreList.push(30);
+                }
             }
         } else {
             //Set the title hint content.
@@ -708,6 +784,9 @@ function updateDrive() {
         console.log('test list length error.');
         return;
     }
+    //Reset and insert 0s.
+    submitScoreWidgetList=[];
+    submitScoreList=[];
     //Loop and set the src to the html.
     var driveImgItem;
     for(var i=0; i<27; ++i) {
@@ -767,10 +846,19 @@ function kancolleGenCard() {
 function kancolleSecondNextCheck(recordValue) {
     //Check this.
     var recordName=recordValue;
-    if(!(recordName instanceof String)) {
-        recordName=this;
+    if(this.nodeType && this.nodeType==1) {
+        //Rating widget.
+        var widgetName=this.getAttribute('id');
+        recordName=widgetName;
+        var imageIndex=submitScoreWidgetList.indexOf(this.getAttribute('id'));
+        //Save the score.
+        submitScoreList[imageIndex]=recordValue;
+    } else {
+        //It must be an jQ object, means it is a slider widget.
+        // console.log(submitScoreWidgetList.indexOf(this.name));
+        //Change the item name to store the div.
+        recordName=this.name;
     }
-    console.log(recordName);
     //Get the clicked name.
     if(kancolleScoreCounter.indexOf(recordName)==-1) {
         //A new item enabled.
@@ -783,6 +871,8 @@ function kancolleSecondNextCheck(recordValue) {
 }
 
 function showSecondStageKancolle() {
+    submitImageList=[];
+    submitScoreList=[];
     //Upate the title text.
     document.getElementById('title-hint-content').innerHTML=testScoreHintText;
     //Remove the event listener from next button.
@@ -800,16 +890,20 @@ function showSecondStageKancolle() {
     cardList=kancolleList.children;
     //Loop from the first card to last card.
     for(var i=0; i<cardList.length; ++i) {
+        //Save the images.
+        submitImageList.push(testList[i]);
+        //Add one empty score to submit widget list.
+        submitScoreList.push(0);
         //Get the card.
         var cardElement=cardList[i];
         //Get card content.
         var cardContent=cardElement.children[1];
         //Hide the remove data.
         cardContent.children[1].classList.add('kancolle-hidden');
-        //Generate the rating widget.
-        var ratingWidget=createRatingWidget();
         var ratingWidgetName='multiple-kancolle-rating-'+i.toString();
-        ratingWidget.setAttribute('id', ratingWidgetName);
+        submitScoreWidgetList.push(ratingWidgetName);
+        //Generate the rating widget.
+        var ratingWidget=createRatingWidget(ratingWidgetName);
         cardContent.appendChild(ratingWidget);
         //Add widget the list item.
         if(testSingleIndex==0){
@@ -820,7 +914,9 @@ function showSecondStageKancolle() {
                 min:0,
                 max:100,
                 start:0,
-                onClick: kancolleSecondNextCheck});
+                onClick: kancolleSecondNextCheck,
+                onChange: secondSliderValue
+            });
         }
     }
     //Move back to left most.

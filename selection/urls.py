@@ -9,4 +9,5 @@ urlpatterns = [
         url(r'^nthiteration$', views.start_multiple_choices, name='start_multiple_choices'),
         url(r'^generateiteration$', views.generate_iteration_images, name='generate_iteration_images'),
         url(r'^saveinitial$', views.send_initial, name='send_initial'),
+        url(r'^saveiteration$', views.send_iteration, name='send_iteration'),
 ]
