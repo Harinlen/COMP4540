@@ -7,8 +7,11 @@ $('#answer-range').range();
 //Variables.
 var questionWidget="";
 var questionIndex=0;
+var globalTries=5;
 //Answer sheet.
 var answerData=[];
+//CSRF token
+var csrftoken="";
 //Helper variables.
 var radioResultHelper="";
 //Hide all the widgets.
@@ -42,15 +45,45 @@ function hideAnswerSearchCombo() {
     document.getElementById('answer-search-combo').classList.add('hidden_widget');
 }
 
+function saveExpResult() {
+    $.ajax({
+        type: 'POST',
+        url: '/sendquestionresult',
+        dataType: 'json',
+        data : {csrfmiddlewaretoken: csrftoken,
+                exp_result: JSON.stringify(answerData)},
+        success: function(response) {
+            var response_uid=response['uid'];
+            //Add to Cookie.
+            Cookies.set('uid', response_uid);
+            $('#submit-uploading').transition('hide');
+            $('#submit-preparing').transition('show');
+            window.location.href='/initialtest';
+        },
+        error: function(xhr, status, error) {
+            if(globalTries>0) {
+                globalTries = globalTries - 1;
+                saveExpResult();
+            } else {
+                console.log("Error happens!");
+            }
+        }
+    });
+}
+
 function onNextAnimationFinished() {
     //Increase the question index.
     ++questionIndex;
     //Check index.
     if(questionIndex==questionTypes.length) {
         $('#submit-dimmer').dimmer('show');
-        //Start to submit data.
-        //!FIXME: Add codes here.
+        //Increase the progress bar.
+        $('#experiment-progress').progress('increment');
+        saveExpResult();
     } else {
+        //Increase the progress bar.
+        $('#experiment-progress').progress('increment');
+        //Prepare the next question.
         prepareAndShowQuestion();
     }
 }
@@ -88,7 +121,6 @@ function onNextPressed() {
             onComplete: hideAnswerSearchCombo
         });
     }
-    console.log(answerData);
     //Hide the question area, submit button.
     $('#next-button-area').transition('fade up');
     $('#queation-area').transition({
@@ -261,6 +293,8 @@ function prepareAndShowQuestion() {
 
 //Check question type
 $(document).ready(function() {
+    //Get the cookie.
+    csrftoken=Cookies.get('csrftoken');
     //Link next button.
     var nextButton=document.getElementById('next-button');
     nextButton.addEventListener("click", onNextPressed, false);
@@ -269,6 +303,10 @@ $(document).ready(function() {
     inputBox.oninput=inputBoxNextCheck;
     //Reset the index.
     questionIndex=0;
+    $('#experiment-progress').progress({progress: 0,
+                                        duration: 200,
+                                        total: questionTypes.length,
+                                        showActivity: false});
     //Start the first question.
     prepareAndShowQuestion();
 });

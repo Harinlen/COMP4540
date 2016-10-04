@@ -29,23 +29,8 @@ var supportedWidgets=["rating-widget-boolean",
 var testIndex;
 var testDownloadedImages=[];
 var testResult=[];
-
-// using jQuery
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+var csrftoken;
+var uid;
 
 function updateProgress() {
     var currentValue=$('#reading-count-down').progress('get value');
@@ -131,22 +116,28 @@ function enabledNext() {
 var globalTries=3;
 
 function saveExpResult() {
-    var csrftoken = getCookie('csrftoken');
+    csrftoken = Cookies.get('csrftoken');
     $.ajax({
         type: 'POST',
-        url: '/sendngen',
+        url: '/saveinitial',
         dataType: 'json',
         data : {csrfmiddlewaretoken: csrftoken,
+                uid: uid,
                 exp_result: JSON.stringify(testResult)},
         success: function(response) {
             $('#submit-uploading').transition('hide');
             $('#submit-generating').transition('show');
-            var csrftoken = getCookie('csrftoken');
             $.ajax({
-                type: 'GET',
-                url: '/startiteration',
+                type: 'POST',
+                url: '/generateiteration',
                 dataType: 'json',
-                data : {csrfmiddlewaretoken: csrftoken}
+                data : {csrfmiddlewaretoken: csrftoken,
+                        uid: uid,
+                        exp_result: JSON.stringify(testResult),
+                        iteration: 0},
+                success: function(response) {
+                        window.location.href="/multiple?uid="+response['uid']+"&iteration="+response['iteration'];
+                }
             });
         },
         error: function(xhr, status, error) {
@@ -256,16 +247,14 @@ function startNewIteration() {
     document.getElementById("obvserve-item").src=testImage[testIndex];
     document.getElementById("hint-text").innerHTML=testHintText[testIndex];
     //Wait for one second, then launch the animation.
-    window.setTimeout(function(){
-        //Start animations.
-        $('#reading-count-down').transition('scale');
-        $('#obvserve-item').transition({
-            animation : 'fade down',
-            onComplete : function() {
-                window.setTimeout(updateProgress, 1000);
-            }
-        });
-    }, 1000);
+    //Start animations.
+    $('#reading-count-down').transition('scale');
+    $('#obvserve-item').transition({
+        animation : 'fade down',
+        onComplete : function() {
+            window.setTimeout(updateProgress, 1000);
+        }
+    });
 }
 
 function setTestCases() {
@@ -282,6 +271,11 @@ function setTestCases() {
 }
 
 function startUp() {
+    //Get uid from cookie.
+    uid=Cookies.get('uid');
+    //Set the instruction title.
+    document.getElementById("instruction-title").innerHTML=testInstructionTitle;
+    document.getElementById("instruction-text").innerHTML=testInstructionText;
     //Update the animations.
     $('#rating-widget-boolean').transition('hide');
     $('#rating-widget-boolean-group').transition('hide');

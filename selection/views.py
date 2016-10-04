@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseNotFound
 from . import models
 from selection.models import ExpResult
 from enum import Enum
+from PIL import Image
+import json
 import hashlib
 
 single_choice_codename = 'akatsuki'
@@ -17,77 +19,8 @@ class Question_Type(Enum):
     Checkbox = 4;
     SearchCombo = 5;
 
-initial_test_maximum_radio = 7;
-initial_test_image=['static/images/1.png',
-                    'static/images/2.png',
-                    'static/images/3.png',
-                    'static/images/4.png',
-                    'static/images/5.png',
-                    'static/images/6.png',
-                    'static/images/7.png',
-                    'static/images/8.png',
-                    'static/images/9.png',
-                    'static/images/10.png',
-                    'static/images/11.png',
-                    'static/images/12.png',
-                    'static/images/13.png',
-                    'static/images/14.png',
-                    'static/images/15.png',
-                    'static/images/16.png',
-                    'static/images/17.png',
-                    'static/images/18.png',
-                    'static/images/19.png',
-                    'static/images/20.png'];
-initial_test_list=[ 0,0,0,0,
-                    1,1,1,1,
-                    2,2,2,2,
-                    3,3,3,3,
-                    4,4,4,4];
-initial_test_text=['Do you like this image?',
-                 'Do you like this image?',
-                 'Do you like this image?',
-                 'Do you like this image?',
-                 'Do you like this image?',
-                 'Do you like this image?',
-                 'Do you like this image?',
-                 'Do you like this image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?',
-                 'Please indicate how much you like the image?'];
-initial_test_label = [[],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      [],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like'],
-                      ['Dislike', 'So-so', 'Like']];
-
-q_image = [ '/static/images/1.png'];
-q_list = [2];
-q_text = ['Test'];
-q_label = [['Dislike', 'Normal', 'Like']];
+multiple_ui    =[0, 0, 1, 1, 2, 2, 3, 3];
+multiple_single=[0, 1, 0, 1, 0 ,1, 0, 1];
 
 def render_question_page(request, questionMap):
     return render(request, question_codename + '/index.html',
@@ -95,50 +28,59 @@ def render_question_page(request, questionMap):
 
 
 def start_multiple_choices(request):
-    multiple_test_image=['static/images/1.png',
-                  'static/images/2.png',
-                  'static/images/3.png',
-                  'static/images/4.png',
-                  'static/images/5.png',
-                  'static/images/6.png',
-                  'static/images/7.png',
-                  'static/images/8.png',
-                  'static/images/9.png',
-                  'static/images/10.png',
-                  'static/images/11.png',
-                  'static/images/12.png',
-                  'static/images/13.png',
-                  'static/images/14.png',
-                  'static/images/15.png',
-                  'static/images/16.png',
-                  'static/images/17.png',
-                  'static/images/18.png',
-                  'static/images/19.png',
-                  'static/images/20.png',
-                  'static/images/1.png',
-                  'static/images/2.png',
-                  'static/images/3.png',
-                  'static/images/4.png',
-                  'static/images/5.png',
-                  'static/images/6.png',
-                  'static/images/7.png'];
+    uid=request.GET.get('uid');
+    if uid==None:
+        return HttpResponseNotFound('<h1>Invalid Request</h1>');
+    iteration_num=request.GET.get('iteration');
+    if iteration_num==None:
+        return HttpResponseNotFound('<h1>Invalid Request</h1>');
+    # Get ui index.
+    iteration_num=int(iteration_num);
+    # Check iteration.
+    if iteration_num>7:
+        return HttpResponseNotFound('<h1>Invalid Request</h1>');
     singleIndex=request.GET.get('single');
     if singleIndex==None:
-        singleIndex=0;
+        singleIndex=multiple_single[iteration_num];
     else:
         singleIndex=int(singleIndex);
         if singleIndex>1:
             singleIndex=0;
-
     uiIndex=request.GET.get('ui');
     if uiIndex==None:
-        uiIndex=0;
+        uiIndex=multiple_ui[iteration_num];
     else:
         uiIndex=int(uiIndex);
         if uiIndex>3:
             uiIndex=0;
     return render(request, multiple_choice_codename + '/index.html',
-                  {'testList':multiple_test_image,
+                  {'testList':['static/images/1.png',
+                               'static/images/2.png',
+                               'static/images/3.png',
+                               'static/images/4.png',
+                               'static/images/5.png',
+                               'static/images/6.png',
+                               'static/images/7.png',
+                               'static/images/8.png',
+                               'static/images/9.png',
+                               'static/images/10.png',
+                               'static/images/11.png',
+                               'static/images/12.png',
+                               'static/images/13.png',
+                               'static/images/14.png',
+                               'static/images/15.png',
+                               'static/images/16.png',
+                               'static/images/17.png',
+                               'static/images/18.png',
+                               'static/images/19.png',
+                               'static/images/20.png',
+                               'static/images/1.png',
+                               'static/images/2.png',
+                               'static/images/3.png',
+                               'static/images/4.png',
+                               'static/images/5.png',
+                               'static/images/6.png',
+                               'static/images/7.png'],
                    'testTitle':"'Mondrian Painting #'",
                    'testHintText':"'Choose the images you like'",
                    'testScoreHintText':"'Score the chosen images'",
@@ -147,13 +89,82 @@ def start_multiple_choices(request):
                    'testSingleIndex':singleIndex,
                    'testUIIndex':uiIndex});
 
-def start_single_choices(request):
+def start_initial_test(request):
+    # Check request.
+    uid=request.COOKIES.get('uid', 'none');
+    if(uid=='none'):
+        return HttpResponseNotFound('<h1>Invalid Request</h1>');
     return render(request, single_choice_codename + '/index.html',
-                  {'testImage': initial_test_image,
-                    'testList': initial_test_list,
-                    'testHintText': initial_test_text,
-                    'testLabel': initial_test_label,
-                    'testRadioMaximum': initial_test_maximum_radio});
+                  {'testImage': ['static/images/1.png',
+                                #  'static/images/2.png',
+                                #  'static/images/3.png',
+                                #  'static/images/4.png',
+                                #  'static/images/5.png',
+                                #  'static/images/6.png',
+                                #  'static/images/7.png',
+                                #  'static/images/8.png',
+                                #  'static/images/9.png',
+                                #  'static/images/10.png',
+                                #  'static/images/11.png',
+                                #  'static/images/12.png',
+                                #  'static/images/13.png',
+                                #  'static/images/14.png',
+                                #  'static/images/15.png',
+                                #  'static/images/16.png',
+                                #  'static/images/17.png',
+                                #  'static/images/18.png',
+                                #  'static/images/19.png',
+                                 'static/images/20.png'],
+                    'testList': [0,
+                                #  0,0,0,
+                                #  1,1,1,1,
+                                #  2,2,2,2,
+                                #  3,3,3,3,
+                                #  4,4,4,
+                                 4],
+                    'testHintText': ['Do you like this image?',
+                                    #  'Do you like this image?',
+                                    #  'Do you like this image?',
+                                    #  'Do you like this image?',
+                                    #  'Do you like this image?',
+                                    #  'Do you like this image?',
+                                    #  'Do you like this image?',
+                                    #  'Do you like this image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                    #  'Please indicate how much you like the image?',
+                                     'Please indicate how much you like the image?'],
+                    'testLabel': [[],
+                                #   [],
+                                #   [],
+                                #   [],
+                                #   [],
+                                #   [],
+                                #   [],
+                                #   [],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                #   ['Dislike', 'So-so', 'Like'],
+                                  ['Dislike', 'So-so', 'Like']],
+                    'testRadioMaximum': 7,
+                    'testInstructionTitle': '"Part 1 - Single Image Response Experiment"',
+                    'testInstructionText': '"In the following experiment, you have to rate 20 Mondrian\'s Neo-Plasticism style paintings. You have to score each image as how much you like it, but not how much artistic value it has.</p><p>In the experiment, you will use buttons, stars and sliders to score the paintings.</p><p>Click \'start\' when you are ready."'});
 
 def add_question(questionMap, questionType, questionText, questionExplain, questionSetting):
     questionMap['questionTypes'].append(questionType.value);
@@ -591,14 +602,79 @@ def start_question(request):
                  {"values": ["Yes", "No"]});
     return render_question_page(request, questionMap);
 
-def sendngen(request):
+def generate_iteration_images(request):
     # Check the result.
     if(request.method=="POST"):
         post_data=request.POST;
         exp_result=post_data["exp_result"];
-        print(post_data["exp_result"]);
-        exp_result = ExpResult(result=exp_result,
-                               title=hashlib.sha512(exp_result.encode('utf-8')).hexdigest());
-        exp_result.save();
-        return JsonResponse({'state':'ok'});
+        last_result=json.loads(exp_result);
+        uid=post_data["uid"];
+        iteration=post_data["iteration"];
+        # Generate the new image to static folder.
+        iteration_image_list=['static/images/1.png',
+                              'static/images/2.png',
+                              'static/images/3.png',
+                              'static/images/4.png',
+                              'static/images/5.png',
+                              'static/images/6.png',
+                              'static/images/7.png',
+                              'static/images/8.png',
+                              'static/images/9.png',
+                              'static/images/10.png',
+                              'static/images/11.png',
+                              'static/images/12.png',
+                              'static/images/13.png',
+                              'static/images/14.png',
+                              'static/images/15.png',
+                              'static/images/16.png',
+                              'static/images/17.png',
+                              'static/images/18.png',
+                              'static/images/19.png',
+                              'static/images/20.png',
+                              'static/images/1.png',
+                              'static/images/2.png',
+                              'static/images/3.png',
+                              'static/images/4.png',
+                              'static/images/5.png',
+                              'static/images/6.png',
+                              'static/images/7.png'];
+        iteration=str(int(iteration)+1);
+        return JsonResponse({'state':'ok',
+                             'uid':uid,
+                             'iteration':iteration});
+    return start_question;
+
+def send_question_result(request):
+    # Check the result.
+    if(request.method=="POST"):
+        post_data=request.POST;
+        exp_result=post_data["exp_result"];
+        question_result=json.loads(exp_result);
+        uid=question_result[0];
+        title=uid+"|info";
+        searchList=ExpResult.objects.filter(title=title);
+        if(len(searchList)!=0):
+            searchList[0].result=exp_result;
+            searchList[0].save();
+        else:
+            exp_result = ExpResult(result=exp_result, title=title);
+            exp_result.save();
+        return JsonResponse({'state':'ok', 'uid':uid});
+    return start_question;
+
+def send_initial(request):
+    # Check the result.
+    if(request.method=="POST"):
+        post_data=request.POST;
+        exp_result=post_data["exp_result"];
+        uid=post_data["uid"];
+        title=uid+"|initial";
+        searchList=ExpResult.objects.filter(title=title);
+        if(len(searchList)!=0):
+            searchList[0].result=exp_result;
+            searchList[0].save();
+        else:
+            exp_result = ExpResult(result=exp_result, title=title);
+            exp_result.save();
+        return JsonResponse({'state':'ok', 'uid':uid});
     return start_single_choices(request);

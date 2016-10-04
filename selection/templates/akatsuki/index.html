@@ -5,8 +5,6 @@
     <link rel="stylesheet" href="static/stylesheet/semantic.min.css">
     <link rel="stylesheet" href="static/stylesheet/style.css">
     <link rel="stylesheet" href="static/stylesheet/range.css">
-    <script type="text/javascript" src="static/javascript/jquery-2.2.4.min.js"></script>
-    <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
 </head>
 <body>
     <div id="header">
@@ -64,10 +62,8 @@
     <div id="instruction-dimmer" class="ui page dimmer">
         <div class="content" id="instruction-dimmer-content">
             <div id="instruction-content" class="center">
-                <h1>Part 1 - Single Image Response Experiment</h1>
-                <p>In the following experiment, you have to rate 20 Mondrian's Neo-Plasticism style paintings. You have to score each image as how much you like it, but not how much artistic value it has.</p>
-                <p>In the experiment, you will use buttons, stars and sliders to score the paintings.</p>
-                <p>Click 'start' when you are ready.</p>
+                <h1 id="instruction-title"></h1>
+                <p id="instruction-text"></p>
                 <div class="ui animated black button" id="start-experiment" tabindex="0">
                     <div class="visible content">Start</div>
                     <div class="hidden content">
@@ -85,6 +81,9 @@
             <p id="submit-downloading">Preparing New Iteration</p>
         </div>
     </div>
+    <script type="text/javascript" src="static/javascript/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="static/javascript/js.cookie.js"></script>
+    <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
     <script type="text/javascript" src="static/javascript/range.js"></script>
     <script type="text/javascript">
     var testHintText={{ testHintText|safe}};
@@ -92,6 +91,8 @@
     var testList={{ testList|safe }};
     var testLabel={{ testLabel|safe }};
     var testRadioMaximum={{ testRadioMaximum|safe }};
+    var testInstructionTitle={{ testInstructionTitle|safe }};
+    var testInstructionText={{ testInstructionText|safe }};
     </script>
     <script type="text/javascript" src="static/javascript/script.js"></script>
 </body>
