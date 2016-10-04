@@ -12,7 +12,7 @@ class imageGenerator:
     def init(self):
         looptime=0;
 
-    def generate_iteration(self, imageList, filename):
+    def generate_iteration(self, imageList, filename, imageScore):
         #self.Selection(imageList)
         self.mutation(imageList)
         self.crossover(imageList)
@@ -31,7 +31,7 @@ class imageGenerator:
             #print(gene['area'])
             gene.pop('area',None)
             #print(gene)
-        print("-----------------")
+        # print("-----------------")
         #print('hahahahahahahahahaha')
 
     def saverectangle(self,filename,image):

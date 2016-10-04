@@ -122,6 +122,8 @@ function submitData() {
                 iteration: testIteration,
                 exp_result: JSON.stringify(submitPackage)},
         success: function(response) {
+            $('#submit-uploading').transition('hide');
+            $('#submit-generating').transition('show');
             $.ajax({
                 type: 'POST',
                 url: '/generateiteration',

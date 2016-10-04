@@ -963,6 +963,21 @@ def generate_iteration_images(request):
         iteration=int(iteration);
         if iteration==len(multiple_ui)-1:
             return JsonResponse({"state":"complete"});
+        image_score_list=[];
+        for i in range(0, 27):
+            image_score_list.append(0);
+        # change exp_result to structure.
+        if isinstance(last_result, list):
+            # initial iteration.
+            print(last_result);
+        else:
+            # last result is class, iteration 0 above
+            last_result=last_result["result"];
+            for i in last_result:
+                image_path=i['image'][len(uid)+22+len(str(iteration)):];
+                dot_pos=image_path.index('.');
+                image_path=image_path[0:dot_pos];
+                image_score_list[int(image_path)]=int(i['score']);
         # Increase the iteration
         iteration=str(iteration+1);
         # Generate the file name list.
@@ -976,7 +991,7 @@ def generate_iteration_images(request):
         # Generate the image.
         last_gene=json.loads(post_data["image_gene"]);
         iteration_generator=imageGenerator();
-        last_gene=iteration_generator.generate_iteration(last_gene, imageFilename);
+        last_gene=iteration_generator.generate_iteration(last_gene, imageFilename, image_score_list);
         iteration_gene=json.dumps(last_gene);
         # Save the last gene to a exp data.
         gene_title=uid+"|iteration"+iteration+"-gene";
