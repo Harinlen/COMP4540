@@ -969,7 +969,11 @@ def generate_iteration_images(request):
         # change exp_result to structure.
         if isinstance(last_result, list):
             # initial iteration.
-            print(last_result);
+            for i in last_result:
+                image_path=i['image'][14:];
+                dot_pos=image_path.index('.');
+                image_path=image_path[0:dot_pos];
+                image_score_list[int(image_path)-1]=i['score'];
         else:
             # last result is class, iteration 0 above
             last_result=last_result["result"];
