@@ -359,7 +359,7 @@ def start_multiple_choices(request):
     # Get ui index.
     iteration_num=int(iteration_num);
     # Check iteration.
-    if iteration_num>7:
+    if iteration_num>=len(multiple_ui):
         return HttpResponseNotFound('<h1>Invalid Request</h1>');
 
     # Find last iteration gene information.
@@ -401,6 +401,8 @@ def start_multiple_choices(request):
                    'testUIIndex':uiIndex,
                    'testIteration':iteration_num,
                    'uid':uid,
+                   'progressValue':iteration_num,
+                   'progressTotal':len(multiple_ui),
                    'imageGene':iterationImageGene});
 
 @csrf_exempt

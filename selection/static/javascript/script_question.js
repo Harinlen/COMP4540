@@ -4,6 +4,9 @@ $.fn.dimmer.settings.closable=false;
 $('#answer-combo').dropdown();
 $('#answer-search-combo').dropdown();
 $('#answer-range').range();
+//Hide labels.
+$('#submit-uploading').transition('hide');
+$('#submit-preparing').transition('hide');
 //Variables.
 var questionWidget="";
 var questionIndex=0;
@@ -49,6 +52,7 @@ function hideAnswerSearchCombo() {
 }
 
 function saveExpResult() {
+    $('#submit-uploading').transition('show');
     $.ajax({
         type: 'POST',
         url: '/sendquestionresult',

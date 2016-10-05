@@ -216,7 +216,7 @@
     </div>
     <div id="footer">
         <div id="footer-container">
-            <div id="experiment-progress" class="ui orange tiny progress">
+            <div id="experiment-progress" class="ui orange tiny progress" data-value="{{ progressValue }}" data-total="{{ progressTotal }}">
                 <div class="bar"></div>
             </div>
         </div>
@@ -246,7 +246,7 @@
     var testSingleIndex={{ testSingleIndex|safe }};
     var testUIIndex={{ testUIIndex|safe }};
     var testIteration={{ testIteration|safe }};
-    var uid='{{ uid|safe }}'
+    var uid='{{ uid|safe }}';
     var imageGene={{ imageGene|safe }};
     </script>
     <script type="text/javascript" src="static/javascript/script_multiple.js"></script>

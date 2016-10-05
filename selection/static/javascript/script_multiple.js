@@ -7,6 +7,10 @@ $('#submit-downloading').transition('hide');
 $('#multiple-container').transition('hide');
 //Hide the title hint.
 $('#title-hint-content').transition('hide');
+//Initial the progress.
+$('#experiment-progress').progress({
+    showActivity: false
+});
 //Hide next button.
 $('#next-step').transition('hide');
 //-----Codename: Fuso-----
@@ -93,6 +97,8 @@ function toggleListItem() {
 }
 
 function submitData() {
+    //Increase the progress bar.
+    $('#experiment-progress').progress('increment');
     //Get csrftoken.
     csrftoken = Cookies.get('csrftoken');
     //Show the submit dimmer.
