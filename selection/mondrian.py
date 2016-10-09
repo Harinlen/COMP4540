@@ -5,15 +5,10 @@ import time
 import statistics
 from operator import attrgetter,itemgetter
 
-looptime = 0
-maxLoopTime = 10
-
 class imageGenerator:
-    def init(self):
-        looptime=0;
-
     def generate_iteration(self, imageList, filename, imageScore):
-        #self.Selection(imageList)
+        imageList=self.Selection(imageList, imageScore)
+        print("imageList size:"+str(len(imageList)));
         self.mutation(imageList)
         self.crossover(imageList)
         self.fixLong(imageList)
@@ -446,6 +441,7 @@ class imageGenerator:
 
     def crossover(self,imageList):
         print("enter crossover")
+        random.seed(int(time.time()));
         for image in imageList:
             random.shuffle(image)
         cross = [i for i in range(27)]
@@ -509,6 +505,7 @@ class imageGenerator:
     def mutation(self,imageList):
         print('enter mutation')
         mutationRate = 1
+        random.seed(int(time.time()));
         for i in range(len(imageList)):
             if (random.random() < mutationRate):
                 cut = random.randint(0, len(imageList[i]) - 1)
@@ -576,14 +573,15 @@ class imageGenerator:
                             mutcolor = random.choice(colorList)
                         imageList[i][cut]["color"] = mutcolor
 
-    def Selection(self,imageList):
+    def Selection(self,imageList,imageScore):
         print("enter selection")
+        random.seed(int(time.time()));
         shareValue = []
         randomNumber = []
         newImage = []
-        totalvalue = sum(self.slide)
-        for i in range(len(self.slide)):
-            shareValue.append(self.slide[i] / totalvalue)
+        totalvalue = sum(imageScore)
+        for i in range(len(imageScore)):
+            shareValue.append(imageScore[i] / totalvalue)
         cumShareValue = copy.deepcopy(shareValue)
 
         for i in range(len(shareValue)):
@@ -610,16 +608,7 @@ class imageGenerator:
             else:
                 i = i + 1
 
-        while len(imageList) > 0:
-            del imageList[-1]
-            # print (len(imageList))
-        self.imageList = copy.deepcopy(newImage)
-        # while i < len(imageList):
-        #    imageList[i] = newImage[i]
-        while len(newImage) > 0:
-            del newImage[-1]
-        print (newImage)
-        ##print (newImage)
+        return newImage
 
     def Next(self,image,filename):
         white = '#e5e5df'
@@ -629,7 +618,3 @@ class imageGenerator:
         #self.fixoverlapline(filename[self.i])
         #self.deleteline(filename[self.i],delete)
         #self.drawimage(filename,record)
-
-    def __init__(self):
-        self.slide = []
-        self.init()

@@ -34,8 +34,9 @@ var uid;
 
 function updateProgress() {
     var currentValue=$('#reading-count-down').progress('get value');
-    var totalValue=$('#reading-count-down').progress('get total');
-    if(totalValue==currentValue) {
+    // var totalValue=$('#reading-count-down').progress('get total');
+    // if(totalValue==currentrentValue) {
+    if(true) {
         if(testList[testIndex]==1 ||
            testList[testIndex]==2 ||
            testList[testIndex]==3) {
