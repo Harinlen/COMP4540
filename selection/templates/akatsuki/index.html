@@ -89,6 +89,9 @@
     <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
     <script type="text/javascript" src="static/javascript/range.js"></script>
     <script type="text/javascript">
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+    });
     var testHintText={{ testHintText|safe }};
     var testImage={{ testImage|safe }};
     var testList={{ testList|safe }};

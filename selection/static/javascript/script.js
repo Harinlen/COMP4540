@@ -38,6 +38,7 @@ function updateProgress() {
     var currentValue=$('#reading-count-down').progress('get value');
     var totalValue=$('#reading-count-down').progress('get total');
     if(totalValue==currentValue) {
+    // if(true) {
         if(testList[testIndex]==1 ||
            testList[testIndex]==2 ||
            testList[testIndex]==3) {

@@ -22,6 +22,10 @@ class Question_Type(Enum):
     Checkbox = 4;
     SearchCombo = 5;
 
+
+multiple_ui    =[0, 0, 1, 1, 2, 2, 3, 3];
+multiple_single=[0, 1, 0, 1, 0 ,1, 0, 1];
+
 # Initial static 27 images genes.
 imageList = [
     # 1
@@ -340,15 +344,12 @@ imageList = [
     ]
 ]
 
-multiple_ui    =[0, 0, 1, 1, 2, 2, 3, 3];
-multiple_single=[0, 1, 0, 1, 0 ,1, 0, 1];
-
-@csrf_exempt
+# @csrf_exempt
 def render_question_page(request, questionMap):
     return render(request, question_codename + '/index.html',
                   questionMap);
 
-@csrf_exempt
+# @csrf_exempt
 def start_multiple_choices(request):
     uid=request.GET.get('uid');
     if uid==None:
@@ -405,7 +406,7 @@ def start_multiple_choices(request):
                    'progressTotal':len(multiple_ui),
                    'imageGene':iterationImageGene});
 
-@csrf_exempt
+# @csrf_exempt
 def start_initial_test(request):
     # Check request.
     uid=request.COOKIES.get('uid', 'none');
@@ -511,7 +512,7 @@ def add_question(questionMap, questionType, questionText, questionExplain, quest
     questionMap['questionExplains'].append(questionExplain);
     questionMap['questionSettings'].append(questionSetting);
 
-@csrf_exempt
+# @csrf_exempt
 def start_question(request):
     questionMap={'questionTypes': [],
                  'questionTexts': [],
@@ -952,7 +953,7 @@ def start_question(request):
     questionMap['questionInstructionText'] = '"In this part, you have to answer several questions which related to your personal information. Before you answer these questions, make sure that you have read, understood and signed the <i>Participant Information Sheet</i>.</p><p>The following questions will collect your ANU ID, gender, age and college. If you feel that some of those details which you do not want to share with us, you can quit this experiment now.</p><p>Click \'start\' when you are ready."'
     return render_question_page(request, questionMap);
 
-@csrf_exempt
+# @csrf_exempt
 def generate_iteration_images(request):
     # Check the result.
     if(request.method=="POST"):
@@ -980,15 +981,11 @@ def generate_iteration_images(request):
         else:
             # last result is class, iteration 0 above
             last_result=last_result["result"];
-            ui_index=last_result["ui"];
-            ui_multiplier=1;
-            if ui_index==0:
-                ui_multiplier=10;
             for i in last_result:
                 image_path=i['image'][len(uid)+22+len(str(iteration)):];
                 dot_pos=image_path.index('.');
                 image_path=image_path[0:dot_pos];
-                image_score_list[int(image_path)]=int(i['score'])*ui_multiplier;
+                image_score_list[int(image_path)]=int(i['score']);
         # Increase the iteration
         iteration=str(iteration+1);
         # Generate the file name list.
@@ -1018,7 +1015,7 @@ def generate_iteration_images(request):
                              'iteration':iteration});
     return start_question;
 
-@csrf_exempt
+# @csrf_exempt
 def send_question_result(request):
     # Check the result.
     if(request.method=="POST"):
@@ -1037,7 +1034,7 @@ def send_question_result(request):
         return JsonResponse({'state':'ok', 'uid':uid});
     return start_question;
 
-@csrf_exempt
+# @csrf_exempt
 def send_initial(request):
     # Check the result.
     if(request.method=="POST"):
@@ -1055,7 +1052,7 @@ def send_initial(request):
         return JsonResponse({'state':'ok', 'uid':uid});
     return start_single_choices(request);
 
-@csrf_exempt
+# @csrf_exempt
 def send_iteration(request):
     # Check the result.
     if(request.method=="POST"):

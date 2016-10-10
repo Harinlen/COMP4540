@@ -49,6 +49,9 @@ $('#multiple-kancolle').transition('hide');
 var submitImageList=[];
 var submitScoreWidgetList=[];
 var submitScoreList=[];
+var startTime;
+var secondStageTime;
+var submitTime;
 var csrftoken;
 
 function createRatingWidget(ratingWidgetName) {
@@ -97,6 +100,8 @@ function toggleListItem() {
 }
 
 function submitData() {
+    //Set the submit time.
+    submitTime=new Date();
     //Increase the progress bar.
     $('#experiment-progress').progress('increment');
     //Get csrftoken.
@@ -184,7 +189,7 @@ function listSecondNextCheck(itemValue) {
         //Get the widget score.
         var widgetValue=$('#'+widgetName).rating('get rating');
         //Save the score.
-        submitScoreList[imageIndex]=widgetValue;
+        submitScoreList[imageIndex]=widgetValue*10;
     } else {
         //It must be an jQ object, means it is a slider widget.
         // console.log(submitScoreWidgetList.indexOf(this.name));
@@ -262,6 +267,8 @@ function showSecondStageList() {
     }
     //Back to top.
     $('#multiple-container').scrollTop(0);
+    //Save the time.
+    secondStageTime=new Date();
 }
 
 function updateList() {
@@ -366,7 +373,7 @@ function gridSecondNextCheck(recordValue) {
         recordName=widgetName;
         var imageIndex=submitScoreWidgetList.indexOf(this.getAttribute('id'));
         //Save the score.
-        submitScoreList[imageIndex]=recordValue;
+        submitScoreList[imageIndex]=recordValue*10;
     } else {
         //It must be an jQ object, means it is a slider widget.
         // console.log(submitScoreWidgetList.indexOf(this.name));
@@ -449,6 +456,8 @@ function showSecondStageGrid() {
     //Reset the counter and disable the button.
     gridScoreCounter=[];
     nextButton.classList.add('disabled');
+    //Save the time.
+    secondStageTime=new Date();
 }
 
 function updateGrid() {
@@ -655,12 +664,13 @@ function driveUpdateSecond() {
     for(var i=0; i<9; ++i) {
         //Set the url.
         document.getElementById('drive-second-image-'+i.toString()).setAttribute('src', testList[baseInteger+i]);
-        console.log('drive-second-image-'+i.toString());
     }
     $('#multiple-drive-second').transition({
         animation : driveSecondAnime,
         onComplete : function() {
             $(document).keydown(onSecondDriveKeyDown);
+            //Save the time.
+            secondStageTime=new Date();
         }
     });
 }
@@ -890,7 +900,7 @@ function kancolleSecondNextCheck(recordValue) {
         recordName=widgetName;
         var imageIndex=submitScoreWidgetList.indexOf(this.getAttribute('id'));
         //Save the score.
-        submitScoreList[imageIndex]=recordValue;
+        submitScoreList[imageIndex]=recordValue*10;
     } else {
         //It must be an jQ object, means it is a slider widget.
         // console.log(submitScoreWidgetList.indexOf(this.name));
@@ -959,6 +969,8 @@ function showSecondStageKancolle() {
     }
     //Move back to left most.
     $('#multiple-kancolle-container').scrollLeft(0);
+    //Save the time.
+    secondStageTime=new Date();
 }
 
 function kancolleRemoveCard() {
@@ -1087,6 +1099,8 @@ function startUp() {
     } else if(testUIIndex==3) {
         updateKancolle();
     }
+    //Save the time.
+    startTime=new Date();
 }
 
 $(document)

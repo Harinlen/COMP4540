@@ -237,6 +237,9 @@
     <script type="text/javascript" src="static/javascript/semantic.min.js"></script>
     <script type="text/javascript" src="static/javascript/range.js"></script>
     <script type="text/javascript">
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+    });
     var testList={{ testList|safe }};
     var testTitle={{ testTitle|safe }};
     var testHintText={{ testHintText|safe }};
