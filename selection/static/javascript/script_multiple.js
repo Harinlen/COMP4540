@@ -52,6 +52,8 @@ var submitScoreList=[];
 var startTime;
 var secondStageTime;
 var submitTime;
+var stageOneTime;
+var stageTwoTime;
 var csrftoken;
 
 function createRatingWidget(ratingWidgetName) {
@@ -99,9 +101,19 @@ function toggleListItem() {
     }
 }
 
+function getUtcTime(currentTime) {
+    return Date.UTC(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), currentTime.getHours(), currentTime.getMinutes(), currentTime.getSeconds(), currentTime.getMilliseconds());
+}
+
 function submitData() {
     //Set the submit time.
     submitTime=new Date();
+    //Calculate duration.
+    timeStart=getUtcTime(startTime);
+    timeSecond=getUtcTime(secondStageTime);
+    timeSubmit=getUtcTime(submitTime);
+    stageOneTime=timeSecond-timeStart;
+    stageTwoTime=timeSubmit-timeSecond;
     //Increase the progress bar.
     $('#experiment-progress').progress('increment');
     //Get csrftoken.
@@ -115,6 +127,8 @@ function submitData() {
     var submitPackage={};
     submitPackage["ui"]=testUIIndex;
     submitPackage["iteration"]=testIteration;
+    submitPackage["duration-first"]=stageOneTime;
+    submitPackage["duration-second"]=stageTwoTime;
     //Construct score package.
     var submitData=[];
     for(var i=0; i<submitImageList.length; ++i) {
