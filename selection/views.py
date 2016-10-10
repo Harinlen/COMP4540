@@ -975,15 +975,20 @@ def generate_iteration_images(request):
                 image_path=i['image'][14:];
                 dot_pos=image_path.index('.');
                 image_path=image_path[0:dot_pos];
+                # Score in single response is already translate to 0-100
                 image_score_list[int(image_path)-1]=i['score'];
         else:
             # last result is class, iteration 0 above
             last_result=last_result["result"];
+            ui_index=last_result["ui"];
+            ui_multiplier=1;
+            if ui_index==0:
+                ui_multiplier=10;
             for i in last_result:
                 image_path=i['image'][len(uid)+22+len(str(iteration)):];
                 dot_pos=image_path.index('.');
                 image_path=image_path[0:dot_pos];
-                image_score_list[int(image_path)]=int(i['score']);
+                image_score_list[int(image_path)]=int(i['score'])*ui_multiplier;
         # Increase the iteration
         iteration=str(iteration+1);
         # Generate the file name list.

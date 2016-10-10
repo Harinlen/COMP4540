@@ -31,6 +31,8 @@ var testDownloadedImages=[];
 var testResult=[];
 var csrftoken;
 var uid;
+var startTime;
+var pressNextTime;
 
 function updateProgress() {
     var currentValue=$('#reading-count-down').progress('get value');
@@ -58,6 +60,8 @@ function updateProgress() {
                     animation : 'fade right',
                     onComplete : function() {
                         $('#next-image').transition('fade down');
+                        //Set the start time.
+                        startTime=new Date();
                     }
                 });
             }
@@ -152,7 +156,13 @@ function saveExpResult() {
     });
 }
 
+function getUtcTime(currentTime) {
+    return Date.UTC(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), currentTime.getHours(), currentTime.getMinutes(), currentTime.getSeconds(), currentTime.getMilliseconds());
+}
+
 function onNextClick() {
+    //Save the click time.
+    pressNextTime=new Date();
     //Check the current value is valid or not.
     $('#obvserve-item').transition('fade down');
     $('#hint-text').transition('scale');
@@ -206,6 +216,7 @@ function onNextClick() {
             imageScoreItem["image"]=testImage[testIndex];
             imageScoreItem["ui"]=testList[testIndex];
             imageScoreItem["score"]=imageScore;
+            imageScoreItem["duration"]=getUtcTime(pressNextTime)-getUtcTime(startTime);
             testResult.push(imageScoreItem);
 
             //Increase the index.
