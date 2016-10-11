@@ -240,6 +240,26 @@
     font-size:23px;
 }
 
+#finish-dimmer-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width:61.8%;
+    height: 61.8%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}
+
+#finish-dimmer-content h1 {
+    font-size:38px;
+}
+
+#finish-dimmer-content p {
+    font-size:23px;
+}
+
 #answer-area {
 
 }

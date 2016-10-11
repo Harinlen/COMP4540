@@ -7,12 +7,15 @@ $('#answer-range').range();
 //Hide labels.
 $('#submit-uploading').transition('hide');
 $('#submit-preparing').transition('hide');
+//Hide finish content.
+$('#finish-dimmer-content').transition('hide');
 //Variables.
 var questionWidget="";
 var questionIndex=0;
 var globalTries=5;
 var sliderHelper=0;
 var checkboxHelper=[];
+var finishedUrl="";
 //Answer sheet.
 var answerData=[];
 //CSRF token
@@ -32,6 +35,12 @@ $('#answer-checkbox-list').transition('hide');
 //Hide question area and submit button.
 $('#next-button-area').transition('hide');
 $('#queation-area').transition('hide');
+
+//Finish button click.
+function onFinishClicked() {
+    //Jump to the finish url.
+    window.location.href=finishedUrl;
+}
 
 //Update range function.
 function updateAnswerValue(value) {
@@ -76,12 +85,25 @@ function saveExpResult() {
                 uid: uid,
                 exp_result: JSON.stringify(answerData)},
         success: function(response) {
-            var response_uid=response['uid'];
-            //Add to Cookie.
-            Cookies.set('uid', response_uid);
-            $('#submit-uploading').transition('hide');
-            $('#submit-preparing').transition('show');
-            window.location.href=response['url'];
+            //Check response data.
+            if(response['state']=='finished') {
+                //Set the data to finish title and content.
+                document.getElementById('finish-title').innerHTML=response['title'];
+                document.getElementById('finish-text').innerHTML=response['content'];
+                //Set the finish URL.
+                finishedUrl=response['url'];
+                //Start animation.
+                $('#submit-loader').transition('hide');
+                //Show the finish page.
+                $('#finish-dimmer-content').transition('show');
+            } else {
+                var response_uid=response['uid'];
+                //Add to Cookie.
+                Cookies.set('uid', response_uid);
+                $('#submit-uploading').transition('hide');
+                $('#submit-preparing').transition('show');
+                window.location.href=response['url'];
+            }
         },
         error: function(xhr, status, error) {
             if(globalTries>0) {
@@ -358,4 +380,5 @@ $(document).ready(function() {
         $('#instruction-dimmer').dimmer('hide');
         window.setTimeout(prepareAndShowQuestion, 500);
     }, false);
+    document.getElementById('finish-experiment').addEventListener('click', onFinishClicked, false);
 });

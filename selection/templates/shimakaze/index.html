@@ -90,9 +90,21 @@
         </div>
     </div>
     <div id="submit-dimmer" class="ui page dimmer">
-        <div class="ui massive text loader">
+        <div id="submit-loader" class="ui massive text loader">
             <p id="submit-uploading">Submitting</p>
             <p id="submit-preparing">Preparing Initial Iteration</p>
+        </div>
+        <div class="content" id="finish-dimmer-content">
+            <div id="finish-content" class="center">
+                <h1 id="finish-title"></h1>
+                <p id="finish-text"></p>
+                <div class="ui animated black button" id="finish-experiment" tabindex="0">
+                    <div class="visible content">Finished</div>
+                    <div class="hidden content">
+                        <i class="right arrow icon"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script type="text/javascript" src="static/javascript/jquery-2.2.4.min.js"></script>

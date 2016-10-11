@@ -566,8 +566,8 @@ def start_multiple_question(request):
                  "Which widget would you prefer for providing response for a single image?",
                  "In some user interfaces, you were asking for choosing the score for the selected images. In the experiment, you should meet two kinds of widgets: heart rating and slider. Select the one you prefer to use.",
                  {"defaultText":"Your prefer widget",
-                  "values":[["Heart Rating", "0",
-                             "Slider", "1"]]});
+                  "values":[["Heart Rating", "0"],
+                            ["Slider", "1"]]});
 
     add_question(questionMap, Question_Type.Text,
                  "Why you prefer that rating widget?",
@@ -588,7 +588,7 @@ def start_multiple_question(request):
 
     questionMap["questionInstructionTitle"]='\"Part 5 - Multiple Image Response UI Question\"';
     questionMap['questionInstructionText'] = '"This is the last part of the experiment. In this part, you have to answer several questions which related to the multiple images selection UI experiment section. These questions are important to the experiment and it will affect the result of the experiment. So please answer these questions seriously.</p><p>Click \'start\' when you are ready."';
-    questionMap['submitUrl']='"/sendsinglequestionresult"';
+    questionMap['submitUrl']='"/sendmultiplequestionresult"';
     questionMap['uid']='"'+uid+'"';
     # Start to rendering the data.
     return render_question_page(request, questionMap);
@@ -1149,7 +1149,7 @@ def generate_iteration_images(request):
         else:
             return JsonResponse({'state':'ok',
                                  'url' : "/multiple?uid="+uid+"&iteration="+iteration});
-    return start_question;
+    return start_question(request);
 
 # @csrf_exempt
 def send_question_result(request):
@@ -1168,7 +1168,7 @@ def send_question_result(request):
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
         return JsonResponse({'state':'ok', 'uid':uid, 'url':'/initialtest'});
-    return start_question;
+    return start_question(request);
 
 # @csrf_exempt
 def send_single_question_result(request):
@@ -1187,7 +1187,29 @@ def send_single_question_result(request):
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
         return JsonResponse({'state':'ok', 'uid':uid, 'url':"/multiple?uid="+uid+"&iteration=0"});
-    return start_question;
+    return start_question(request);
+
+# @csrf_exempt
+def send_multiple_question_result(request):
+    # Check the result.
+    if(request.method=="POST"):
+        post_data=request.POST;
+        exp_result=post_data["exp_result"];
+        question_result=json.loads(exp_result);
+        uid=post_data["uid"];
+        title=uid+"|multiple-question";
+        searchList=ExpResult.objects.filter(title=title);
+        if(len(searchList)!=0):
+            searchList[0].result=exp_result;
+            searchList[0].save();
+        else:
+            exp_result = ExpResult(result=exp_result, title=title);
+            exp_result.save();
+        return JsonResponse({'state':'finished',
+                             'title':'Congratulations!',
+                             'content':'You have done all the parts of the experiment. Thanks for you participation.',
+                             'url':'about:blank'});
+    return start_question(request);
 
 # @csrf_exempt
 def send_initial(request):
