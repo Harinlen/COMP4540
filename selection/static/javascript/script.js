@@ -79,7 +79,6 @@ function onDownloadSuccess() {
     ++downloadedIndex;
     testDownloadedImages.push(downloadedImage);
     if(downloadedIndex==testImage.length) {
-        console.log(testDownloadedImages);
         //Hide the dimmer.
         $('#instruction-dimmer').dimmer('hide');
         //Start test case.
@@ -124,7 +123,7 @@ function saveExpResult() {
     csrftoken = Cookies.get('csrftoken');
     $.ajax({
         type: 'POST',
-        url: '/saveinitial',
+        url: submitUrl,
         dataType: 'json',
         data : {csrfmiddlewaretoken: csrftoken,
                 uid: uid,
@@ -142,7 +141,8 @@ function saveExpResult() {
                         image_gene: JSON.stringify(imageGene),
                         iteration: -1},
                 success: function(response) {
-                        window.location.href="/multiple?uid="+response['uid']+"&iteration="+response['iteration'];
+                        //Start the question.
+                        window.location.href=response['url'];
                 }
             });
         },
@@ -327,6 +327,7 @@ function startUp() {
         radioItem.classList.add('checkbox');
         var radioInput=document.createElement('input');
         radioInput.setAttribute('name', 'rating');
+        radioInput.setAttribute('class', 'hidden');
         radioInput.setAttribute('type', 'radio');
         radioItem.appendChild(radioInput);
         var radioLabel=document.createElement('label');

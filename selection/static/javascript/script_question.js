@@ -12,6 +12,7 @@ var questionWidget="";
 var questionIndex=0;
 var globalTries=5;
 var sliderHelper=0;
+var checkboxHelper=[];
 //Answer sheet.
 var answerData=[];
 //CSRF token
@@ -43,6 +44,20 @@ function updateAnswerValue(value) {
     nextButton.classList.remove('disabled');
 }
 
+function onCheckBoxChange() {
+    //Get the check box this.
+    var itemName=parseInt(this.getAttribute('name').substring(15));
+    //Check item name is in the list or not.
+    var itemIndex=checkboxHelper.indexOf(itemName);
+    if(itemIndex==-1) {
+        //Append the item to list.
+        checkboxHelper.push(itemName);
+    } else {
+        //Remove the item.
+        checkboxHelper.splice(itemIndex, 1);
+    }
+}
+
 function hideAnswerCombo() {
     document.getElementById('answer-combo').classList.add('hidden_widget');
 }
@@ -55,9 +70,10 @@ function saveExpResult() {
     $('#submit-uploading').transition('show');
     $.ajax({
         type: 'POST',
-        url: '/sendquestionresult',
+        url: submitUrl,
         dataType: 'json',
         data : {csrfmiddlewaretoken: csrftoken,
+                uid: uid,
                 exp_result: JSON.stringify(answerData)},
         success: function(response) {
             var response_uid=response['uid'];
@@ -65,7 +81,7 @@ function saveExpResult() {
             Cookies.set('uid', response_uid);
             $('#submit-uploading').transition('hide');
             $('#submit-preparing').transition('show');
-            window.location.href='/initialtest';
+            window.location.href=response['url'];
         },
         error: function(xhr, status, error) {
             if(globalTries>0) {
@@ -118,9 +134,12 @@ function onNextPressed() {
     } else if(questionType==3) {
         //Radio list.
         answerData.push(radioResultHelper);
-        //Search all content in the list.
+        //Hide widget.
         $('#answer-radio-list').transition('fade up');
     } else if(questionType==4) {
+        //Check box list.
+        answerData.push(checkboxHelper);
+        //Hide widget.
         $('#answer-checkbox-list').transition('fade up');
     } else if(questionType==5) {
         //Search Combo box.
@@ -232,9 +251,11 @@ function prepareAndShowQuestion() {
             candidateItem.classList.add('ui');
             candidateItem.classList.add('radio');
             candidateItem.classList.add('checkbox');
+            candidateItem.setAttribute('id', 'answer-radio-'+i);
             var candidateInput=document.createElement('input');
             candidateInput.setAttribute('name', 'question-field');
             candidateInput.setAttribute('type', 'radio');
+            candidateInput.setAttribute('class', 'hidden');
             candidateInput.setAttribute('value', candidateList[i]);
             candidateItem.appendChild(candidateInput);
             var candidateValue=document.createElement('label');
@@ -242,25 +263,29 @@ function prepareAndShowQuestion() {
             candidateItem.appendChild(candidateValue);
             candidateField.appendChild(candidateItem);
             listArea.appendChild(candidateField);
+            $('#answer-radio-'+i).checkbox();
         }
         $('#answer-radio-list').transition('fade up');
     } else if(questionType==4) {
         questionWidget="answer-checkbox-list";
         var candidateList=questionSetting["values"];
         var listArea=document.getElementById('answer-checkbox-list-area');
-        while(listArea.firstChild){
-            listArea.firstChild.removeEventListener('click', generalNextCheck, false);
+        checkboxHelper=[];
+        while(listArea.firstChild) {
+            // listArea.firstChild.removeEventListener('click', generalNextCheck, false);
             listArea.removeChild(listArea.firstChild);
         }
         for(var i=0; i<candidateList.length; ++i) {
             var candidateField=document.createElement('div');
             candidateField.classList.add('field');
-            candidateField.addEventListener('click', generalNextCheck, false);
+            // candidateField.addEventListener('click', generalNextCheck, false);
             var candidateItem=document.createElement('div');
             candidateItem.classList.add('ui');
             candidateItem.classList.add('checkbox');
+            candidateItem.setAttribute('id', 'answer-checkbox-'+i);
             var candidateInput=document.createElement('input');
-            candidateInput.setAttribute('name', 'question-field');
+            candidateInput.setAttribute('name', 'question-field-'+i);
+            candidateInput.setAttribute('class', 'hidden');
             candidateInput.setAttribute('type', 'checkbox');
             candidateItem.appendChild(candidateInput);
             var candidateValue=document.createElement('label');
@@ -268,6 +293,9 @@ function prepareAndShowQuestion() {
             candidateItem.appendChild(candidateValue);
             candidateField.appendChild(candidateItem);
             listArea.appendChild(candidateField);
+            $('#answer-checkbox-'+i).checkbox({
+                onChange: onCheckBoxChange
+            });
         }
         $('#answer-checkbox-list').transition('fade up');
     } else if(questionType==5) {
@@ -299,7 +327,9 @@ function prepareAndShowQuestion() {
     $('#queation-area').transition('fade down');
     //Disable the next button.
     var nextButton=document.getElementById('next-button');
-    nextButton.classList.add('disabled');
+    if(questionType!=4) {
+        nextButton.classList.add('disabled');
+    }
 }
 
 //Check question type

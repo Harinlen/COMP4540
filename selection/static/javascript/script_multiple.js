@@ -160,11 +160,7 @@ function submitData() {
                     image_gene: JSON.stringify(imageGene),
                     exp_result: JSON.stringify(submitPackage)},
                 success: function(response) {
-                    if(response['state']=='complete') {
-                        window.location.href='about:blank';
-                    } else {
-                        window.location.href="/multiple?uid="+response['uid']+"&iteration="+response['iteration'];
-                    }
+                    window.location.href=response['url'];
                 }
             });
         }
@@ -1103,7 +1099,7 @@ function updateKancolle() {
     }, 500);
 }
 
-function startUp() {
+function startUITest() {
     if(testUIIndex==0) {
         updateList();
     } else if(testUIIndex==1) {
@@ -1115,6 +1111,30 @@ function startUp() {
     }
     //Save the time.
     startTime=new Date();
+}
+
+function onStartClick(){
+    //Hide the dimmer.
+    $('#instruction-dimmer').dimmer('hide');
+    //Start the ui test.
+    //Start test case.
+    window.setTimeout(startUITest, 300);
+}
+
+function startUp() {
+    //Check the instruction text.
+    if(testInstructionTitle.length==0) {
+        startUITest();
+    } else {
+        //Show the instructions.
+        document.getElementById("instruction-title").innerHTML=testInstructionTitle;
+        document.getElementById("instruction-text").innerHTML=testInstructionText;
+        //Initial start button.
+        var startButton=document.getElementById("start-experiment");
+        startButton.addEventListener("click", onStartClick, false);
+        //Show the instruction dimmer.
+        $('#instruction-dimmer').dimmer('show');
+    }
 }
 
 $(document)

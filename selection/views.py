@@ -6,6 +6,8 @@ from enum import Enum
 from PIL import Image
 from .mondrian import imageGenerator
 from django.views.decorators.csrf import csrf_exempt
+import random
+import time
 import os.path
 import json
 import hashlib
@@ -25,324 +27,6 @@ class Question_Type(Enum):
 
 multiple_ui    =[0, 0, 1, 1, 2, 2, 3, 3];
 multiple_single=[0, 1, 0, 1, 0 ,1, 0, 1];
-
-# Initial static 27 images genes.
-imageList = [
-    # 1
-    [
-        {'startx': '0', 'starty': '0', 'endx': '480', 'endy': '130', 'color': 'red'},
-        {'startx': '0', 'starty': '130', 'endx': '280', 'endy': '480', 'color': 'yellow'},
-        {'startx': '280', 'starty': '130', 'endx': '480', 'endy': '300', 'color': 'white'},
-        {'startx': '280', 'starty': '300', 'endx': '480', 'endy': '480', 'color': 'blue'}
-    ],
-
-    # 2
-    [
-        {'startx': '0', 'starty': '0', 'endx': '100', 'endy': '320', 'color': 'red'},
-        {'startx': '0', 'starty': '320', 'endx': '100', 'endy': '480', 'color': 'white'},
-        {'startx': '100', 'starty': '0', 'endx': '330', 'endy': '160', 'color': 'white'},
-        {'startx': '100', 'starty': '160', 'endx': '330', 'endy': '480', 'color': 'white'},
-        {'startx': '330', 'starty': '0', 'endx': '480', 'endy': '230', 'color': 'blue'},
-        {'startx': '330', 'starty': '230', 'endx': '480', 'endy': '480', 'color': 'yellow'}
-    ],
-
-    # 3
-    [
-        {'startx': '0', 'starty': '0', 'endx': '170', 'endy': '180', 'color': 'red'},
-        {'startx': '170', 'starty': '0', 'endx': '325', 'endy': '180', 'color': 'white'},
-        {'startx': '325', 'starty': '0', 'endx': '480', 'endy': '180', 'color': 'yellow'},
-        {'startx': '0', 'starty': '180', 'endx': '170', 'endy': '370', 'color': 'white'},
-        {'startx': '0', 'starty': '370', 'endx': '170', 'endy': '480', 'color': 'yellow'},
-        {'startx': '170', 'starty': '180', 'endx': '480', 'endy': '330', 'color': 'blue'},
-        {'startx': '170', 'starty': '330', 'endx': '480', 'endy': '480', 'color': 'red'}
-    ],
-
-    # 4
-    [
-        {'startx': '0', 'starty': '0', 'endx': '140', 'endy': '100', 'color': 'blue'},
-        {'startx': '140', 'starty': '0', 'endx': '480', 'endy': '100', 'color': 'white'},
-        {'startx': '0', 'starty': '100', 'endx': '480', 'endy': '210', 'color': 'yellow'},
-        {'startx': '0', 'starty': '210', 'endx': '330', 'endy': '480', 'color': 'white'},
-        {'startx': '330', 'starty': '210', 'endx': '480', 'endy': '480', 'color': 'red'}
-    ],
-
-    # 5
-    [
-        {'startx': '0', 'starty': '0', 'endx': '150', 'endy': '70', 'color': 'red'},
-        {'startx': '0', 'starty': '70', 'endx': '150', 'endy': '280', 'color': 'white'},
-        {'startx': '0', 'starty': '280', 'endx': '150', 'endy': '480', 'color': 'yellow'},
-        {'startx': '150', 'starty': '0', 'endx': '300', 'endy': '140', 'color': 'yellow'},
-        {'startx': '150', 'starty': '140', 'endx': '300', 'endy': '280', 'color': 'white'},
-        {'startx': '150', 'starty': '280', 'endx': '300', 'endy': '480', 'color': 'blue'},
-        {'startx': '300', 'starty': '0', 'endx': '480', 'endy': '280', 'color': 'blue'},
-        {'startx': '300', 'starty': '280', 'endx': '480', 'endy': '480', 'color': 'white'}
-    ],
-
-    # 6
-    [
-        {'startx': '0', 'starty': '0', 'endx': '70', 'endy': '70', 'color': 'yellow'},
-        {'startx': '70', 'starty': '0', 'endx': '410', 'endy': '70', 'color': 'red'},
-        {'startx': '410', 'starty': '0', 'endx': '480', 'endy': '70', 'color': 'yellow'},
-        {'startx': '0', 'starty': '70', 'endx': '70', 'endy': '410', 'color': 'red'},
-        {'startx': '70', 'starty': '70', 'endx': '240', 'endy': '240', 'color': 'blue'},
-        {'startx': '240', 'starty': '70', 'endx': '410', 'endy': '240', 'color': 'blue'},
-        {'startx': '70', 'starty': '240', 'endx': '240', 'endy': '410', 'color': 'blue'},
-        {'startx': '240', 'starty': '240', 'endx': '410', 'endy': '410', 'color': 'blue'},
-        {'startx': '410', 'starty': '70', 'endx': '480', 'endy': '410', 'color': 'red'},
-        {'startx': '0', 'starty': '410', 'endx': '70', 'endy': '480', 'color': 'yellow'},
-        {'startx': '70', 'starty': '410', 'endx': '410', 'endy': '480', 'color': 'red'},
-        {'startx': '410', 'starty': '410', 'endx': '480', 'endy': '480', 'color': 'yellow'}
-
-    ],
-
-    # 7
-    [
-        {'startx': '0', 'starty': '0', 'endx': '140', 'endy': '480', 'color': 'red'},
-        {'startx': '140', 'starty': '0', 'endx': '480', 'endy': '100', 'color': 'white'},
-        {'startx': '140', 'starty': '100', 'endx': '300', 'endy': '480', 'color': 'yellow'},
-        {'startx': '300', 'starty': '100', 'endx': '480', 'endy': '240', 'color': 'white'},
-        {'startx': '300', 'starty': '240', 'endx': '390', 'endy': '480', 'color': 'blue'},
-        {'startx': '390', 'starty': '240', 'endx': '480', 'endy': '360', 'color': 'white'},
-        {'startx': '390', 'starty': '360', 'endx': '480', 'endy': '480', 'color': 'white'}
-    ],
-
-    # 8
-    [
-        {'startx': '0', 'starty': '0', 'endx': '120', 'endy': '100', 'color': 'red'},
-        {'startx': '120', 'starty': '0', 'endx': '340', 'endy': '100', 'color': 'white'},
-        {'startx': '340', 'starty': '0', 'endx': '480', 'endy': '100', 'color': 'yellow'},
-        {'startx': '0', 'starty': '100', 'endx': '240', 'endy': '200', 'color': 'white'},
-        {'startx': '0', 'starty': '200', 'endx': '240', 'endy': '480', 'color': 'blue'},
-        {'startx': '240', 'starty': '100', 'endx': '480', 'endy': '320', 'color': 'white'},
-        {'startx': '240', 'starty': '320', 'endx': '480', 'endy': '480', 'color': 'yellow'}
-    ],
-
-    # 9
-    [
-        {'startx': '0', 'starty': '0', 'endx': '160', 'endy': '140', 'color': 'yellow'},
-        {'startx': '0', 'starty': '140', 'endx': '160', 'endy': '480', 'color': 'white'},
-        {'startx': '160', 'starty': '0', 'endx': '480', 'endy': '330', 'color': 'red'},
-        {'startx': '160', 'starty': '330', 'endx': '340', 'endy': '480', 'color': 'blue'},
-        {'startx': '340', 'starty': '330', 'endx': '480', 'endy': '480', 'color': 'white'}
-    ],
-
-    # 10
-    [
-        {'startx': '0', 'starty': '0', 'endx': '370', 'endy': '100', 'color': 'white'},
-        {'startx': '370', 'starty': '0', 'endx': '480', 'endy': '100', 'color': 'blue'},
-        {'startx': '0', 'starty': '100', 'endx': '110', 'endy': '480', 'color': 'red'},
-        {'startx': '110', 'starty': '100', 'endx': '210', 'endy': '290', 'color': 'white'},
-        {'startx': '110', 'starty': '290', 'endx': '210', 'endy': '480', 'color': 'white'},
-        {'startx': '210', 'starty': '100', 'endx': '480', 'endy': '290', 'color': 'white'},
-        {'startx': '210', 'starty': '290', 'endx': '480', 'endy': '480', 'color': 'yellow'}
-    ],
-
-    # 11
-    [
-        {'startx': '0', 'starty': '0', 'endx': '160', 'endy': '160', 'color': 'red'},
-        {'startx': '160', 'starty': '0', 'endx': '320', 'endy': '160', 'color': 'white'},
-        {'startx': '320', 'starty': '0', 'endx': '480', 'endy': '160', 'color': 'yellow'},
-        {'startx': '0', 'starty': '160', 'endx': '160', 'endy': '320', 'color': 'white'},
-        {'startx': '160', 'starty': '160', 'endx': '320', 'endy': '320', 'color': 'blue'},
-        {'startx': '320', 'starty': '160', 'endx': '480', 'endy': '320', 'color': 'white'},
-        {'startx': '0', 'starty': '320', 'endx': '160', 'endy': '480', 'color': 'yellow'},
-        {'startx': '160', 'starty': '320', 'endx': '320', 'endy': '480', 'color': 'white'},
-        {'startx': '320', 'starty': '320', 'endx': '480', 'endy': '480', 'color': 'red'}
-    ],
-
-    # 12
-    [
-        {'startx': '0', 'starty': '0', 'endx': '480', 'endy': '230', 'color': 'blue'},
-        {'startx': '0', 'starty': '230', 'endx': '240', 'endy': '480', 'color': 'yellow'},
-        {'startx': '240', 'starty': '230', 'endx': '480', 'endy': '340', 'color': 'white'},
-        {'startx': '240', 'starty': '340', 'endx': '360', 'endy': '480', 'color': 'red'},
-        {'startx': '360', 'starty': '340', 'endx': '480', 'endy': '410', 'color': 'yellow'},
-        {'startx': '360', 'starty': '410', 'endx': '420', 'endy': '480', 'color': 'white'},
-        {'startx': '420', 'starty': '410', 'endx': '480', 'endy': '480', 'color': 'red'}
-    ],
-
-    # 13
-    [
-        {'startx': '0', 'starty': '0', 'endx': '160', 'endy': '320', 'color': 'red'},
-        {'startx': '160', 'starty': '0', 'endx': '480', 'endy': '160', 'color': 'blue'},
-        {'startx': '320', 'starty': '160', 'endx': '480', 'endy': '480', 'color': 'yellow'},
-        {'startx': '0', 'starty': '320', 'endx': '320', 'endy': '480', 'color': 'white'},
-        {'startx': '160', 'starty': '160', 'endx': '320', 'endy': '320', 'color': 'white'}
-    ],
-
-    # 14
-    [
-        {'startx': '0', 'starty': '0', 'endx': '290', 'endy': '180', 'color': 'white'},
-        {'startx': '0', 'starty': '180', 'endx': '190', 'endy': '300', 'color': 'yellow'},
-        {'startx': '190', 'starty': '180', 'endx': '290', 'endy': '300', 'color': 'blue'},
-        {'startx': '0', 'starty': '300', 'endx': '290', 'endy': '480', 'color': 'white'},
-        {'startx': '290', 'starty': '0', 'endx': '480', 'endy': '480', 'color': 'red'}
-    ],
-
-    # 15
-    [
-        {'startx': '0', 'starty': '0', 'endx': '360', 'endy': '110', 'color': 'white'},
-        {'startx': '360', 'starty': '0', 'endx': '480', 'endy': '110', 'color': 'white'},
-        {'startx': '0', 'starty': '110', 'endx': '360', 'endy': '160', 'color': 'white'},
-        {'startx': '360', 'starty': '110', 'endx': '480', 'endy': '160', 'color': 'red'},
-        {'startx': '0', 'starty': '160', 'endx': '100', 'endy': '480', 'color': 'blue'},
-        {'startx': '100', 'starty': '160', 'endx': '360', 'endy': '250', 'color': 'white'},
-        {'startx': '100', 'starty': '250', 'endx': '360', 'endy': '480', 'color': 'white'},
-        {'startx': '360', 'starty': '160', 'endx': '480', 'endy': '360', 'color': 'white'},
-        {'startx': '360', 'starty': '360', 'endx': '480', 'endy': '480', 'color': 'blue'}
-    ],
-
-    # 16
-    [
-        {'startx': '0', 'starty': '0', 'endx': '110', 'endy': '480', 'color': 'red'},
-        {'startx': '110', 'starty': '0', 'endx': '350', 'endy': '180', 'color': 'white'},
-        {'startx': '350', 'starty': '0', 'endx': '480', 'endy': '180', 'color': 'yellow'},
-        {'startx': '110', 'starty': '180', 'endx': '200', 'endy': '320', 'color': 'white'},
-        {'startx': '200', 'starty': '180', 'endx': '290', 'endy': '320', 'color': 'red'},
-        {'startx': '110', 'starty': '320', 'endx': '290', 'endy': '480', 'color': 'white'},
-        {'startx': '290', 'starty': '180', 'endx': '480', 'endy': '480', 'color': 'yellow'}
-    ],
-
-    # 17
-    [
-        {'startx': '0', 'starty': '0', 'endx': '360', 'endy': '150', 'color': 'yellow'},
-        {'startx': '360', 'starty': '0', 'endx': '480', 'endy': '150', 'color': 'blue'},
-        {'startx': '0', 'starty': '150', 'endx': '160', 'endy': '480', 'color': 'blue'},
-        {'startx': '160', 'starty': '150', 'endx': '480', 'endy': '270', 'color': 'white'},
-        {'startx': '160', 'starty': '270', 'endx': '320', 'endy': '480', 'color': 'white'},
-        {'startx': '320', 'starty': '270', 'endx': '480', 'endy': '480', 'color': 'red'},
-    ],
-
-    # 18
-    [
-        {'startx': '0', 'starty': '0', 'endx': '60', 'endy': '60', 'color': 'white'},
-        {'startx': '60', 'starty': '0', 'endx': '120', 'endy': '60', 'color': 'white'},
-        {'startx': '120', 'starty': '0', 'endx': '360', 'endy': '60', 'color': 'white'},
-        {'startx': '360', 'starty': '0', 'endx': '420', 'endy': '60', 'color': 'white'},
-        {'startx': '480', 'starty': '0', 'endx': '480', 'endy': '60', 'color': 'white'},
-        {'startx': '0', 'starty': '60', 'endx': '60', 'endy': '120', 'color': 'white'},
-        {'startx': '60', 'starty': '60', 'endx': '120', 'endy': '120', 'color': 'white'},
-        {'startx': '120', 'starty': '60', 'endx': '360', 'endy': '120', 'color': 'white'},
-        {'startx': '360', 'starty': '60', 'endx': '420', 'endy': '120', 'color': 'blue'},
-        {'startx': '480', 'starty': '60', 'endx': '480', 'endy': '120', 'color': 'white'},
-        {'startx': '0', 'starty': '120', 'endx': '60', 'endy': '360', 'color': 'yellow'},
-        {'startx': '60', 'starty': '120', 'endx': '120', 'endy': '360', 'color': 'white'},
-        {'startx': '120', 'starty': '120', 'endx': '360', 'endy': '360', 'color': 'white'},
-        {'startx': '360', 'starty': '120', 'endx': '420', 'endy': '360', 'color': 'white'},
-        {'startx': '420', 'starty': '120', 'endx': '480', 'endy': '360', 'color': 'white'},
-        {'startx': '0', 'starty': '360', 'endx': '60', 'endy': '420', 'color': 'white'},
-        {'startx': '60', 'starty': '360', 'endx': '120', 'endy': '420', 'color': 'white'},
-        {'startx': '120', 'starty': '360', 'endx': '360', 'endy': '420', 'color': 'white'},
-        {'startx': '360', 'starty': '360', 'endx': '420', 'endy': '420', 'color': 'white'},
-        {'startx': '420', 'starty': '360', 'endx': '480', 'endy': '420', 'color': 'white'},
-        {'startx': '0', 'starty': '420', 'endx': '60', 'endy': '480', 'color': 'white'},
-        {'startx': '60', 'starty': '420', 'endx': '120', 'endy': '480', 'color': 'white'},
-        {'startx': '120', 'starty': '420', 'endx': '360', 'endy': '480', 'color': 'white'},
-        {'startx': '360', 'starty': '420', 'endx': '420', 'endy': '480', 'color': 'white'},
-        {'startx': '420', 'starty': '420', 'endx': '480', 'endy': '480', 'color': 'white'}
-    ],
-
-    # 19
-    [
-        {'startx': '0', 'starty': '0', 'endx': '140', 'endy': '480', 'color': 'red'},
-        {'startx': '140', 'starty': '0', 'endx': '480', 'endy': '120', 'color': 'white'},
-        {'startx': '140', 'starty': '120', 'endx': '390', 'endy': '300', 'color': 'blue'},
-        {'startx': '390', 'starty': '120', 'endx': '480', 'endy': '300', 'color': 'white'},
-        {'startx': '140', 'starty': '300', 'endx': '270', 'endy': '480', 'color': 'white'},
-        {'startx': '270', 'starty': '300', 'endx': '480', 'endy': '480', 'color': 'yellow'}
-    ],
-
-    # 20
-    [
-        {'startx': '0', 'starty': '0', 'endx': '60', 'endy': '130', 'color': 'white'},
-        {'startx': '60', 'starty': '0', 'endx': '250', 'endy': '130', 'color': 'yellow'},
-        {'startx': '250', 'starty': '0', 'endx': '370', 'endy': '130', 'color': 'white'},
-        {'startx': '370', 'starty': '0', 'endx': '480', 'endy': '130', 'color': 'blue'},
-        {'startx': '0', 'starty': '130', 'endx': '60', 'endy': '480', 'color': 'yellow'},
-        {'startx': '60', 'starty': '130', 'endx': '250', 'endy': '310', 'color': 'red'},
-        {'startx': '250', 'starty': '130', 'endx': '480', 'endy': '310', 'color': 'white'},
-        {'startx': '60', 'starty': '310', 'endx': '250', 'endy': '480', 'color': 'white'},
-        {'startx': '250', 'starty': '310', 'endx': '480', 'endy': '480', 'color': 'blue'}
-    ],
-
-    # 21
-    [
-        {'startx': '0', 'starty': '0', 'endx': '80', 'endy': '70', 'color': 'red'},
-        {'startx': '80', 'starty': '0', 'endx': '130', 'endy': '70', 'color': 'white'},
-        {'startx': '130', 'starty': '0', 'endx': '480', 'endy': '70', 'color': 'white'},
-        {'startx': '0', 'starty': '70', 'endx': '80', 'endy': '480', 'color': 'white'},
-        {'startx': '80', 'starty': '70', 'endx': '130', 'endy': '130', 'color': 'white'},
-        {'startx': '130', 'starty': '70', 'endx': '480', 'endy': '130', 'color': 'red'},
-        {'startx': '80', 'starty': '130', 'endx': '130', 'endy': '480', 'color': 'white'},
-        {'startx': '130', 'starty': '130', 'endx': '200', 'endy': '220', 'color': 'white'},
-        {'startx': '200', 'starty': '130', 'endx': '480', 'endy': '220', 'color': 'white'},
-        {'startx': '130', 'starty': '220', 'endx': '200', 'endy': '480', 'color': 'yellow'},
-        {'startx': '200', 'starty': '220', 'endx': '480', 'endy': '480', 'color': 'white'}
-    ],
-
-    # 22
-    [
-        {'startx': '0', 'starty': '0', 'endx': '70', 'endy': '60', 'color': 'white'},
-        {'startx': '70', 'starty': '0', 'endx': '410', 'endy': '60', 'color': 'white'},
-        {'startx': '410', 'starty': '0', 'endx': '480', 'endy': '60', 'color': 'blue'},
-        {'startx': '0', 'starty': '60', 'endx': '70', 'endy': '350', 'color': 'white'},
-        {'startx': '0', 'starty': '350', 'endx': '70', 'endy': '480', 'color': 'white'},
-        {'startx': '70', 'starty': '60', 'endx': '410', 'endy': '150', 'color': 'white'},
-        {'startx': '70', 'starty': '150', 'endx': '300', 'endy': '480', 'color': 'yellow'},
-        {'startx': '300', 'starty': '150', 'endx': '410', 'endy': '480', 'color': 'white'},
-        {'startx': '410', 'starty': '60', 'endx': '480', 'endy': '480', 'color': 'white'}
-    ],
-
-    # 23
-    [
-        {'startx': '0', 'starty': '0', 'endx': '120', 'endy': '80', 'color': 'blue'},
-        {'startx': '120', 'starty': '0', 'endx': '150', 'endy': '80', 'color': 'yellow'},
-        {'startx': '150', 'starty': '0', 'endx': '480', 'endy': '80', 'color': 'blue'},
-        {'startx': '0', 'starty': '80', 'endx': '120', 'endy': '120', 'color': 'yellow'},
-        {'startx': '120', 'starty': '80', 'endx': '150', 'endy': '120', 'color': 'white'},
-        {'startx': '150', 'starty': '80', 'endx': '480', 'endy': '120', 'color': 'yellow'},
-        {'startx': '0', 'starty': '120', 'endx': '120', 'endy': '480', 'color': 'blue'},
-        {'startx': '120', 'starty': '120', 'endx': '150', 'endy': '480', 'color': 'yellow'},
-        {'startx': '150', 'starty': '120', 'endx': '480', 'endy': '480', 'color': 'blue'}
-    ],
-
-    # 24
-    [
-        {'startx': '0', 'starty': '0', 'endx': '480', 'endy': '90', 'color': 'white'},
-        {'startx': '0', 'starty': '90', 'endx': '96', 'endy': '390', 'color': 'yellow'},
-        {'startx': '96', 'starty': '90', 'endx': '192', 'endy': '390', 'color': 'white'},
-        {'startx': '192', 'starty': '90', 'endx': '288', 'endy': '390', 'color': 'white'},
-        {'startx': '288', 'starty': '90', 'endx': '384', 'endy': '390', 'color': 'yellow'},
-        {'startx': '384', 'starty': '90', 'endx': '480', 'endy': '390', 'color': 'white'},
-        {'startx': '0', 'starty': '390', 'endx': '480', 'endy': '480', 'color': 'blue'}
-    ],
-
-    # 25
-    [
-        {'startx': '0', 'starty': '0', 'endx': '160', 'endy': '480', 'color': 'red'},
-        {'startx': '160', 'starty': '0', 'endx': '320', 'endy': '480', 'color': 'white'},
-        {'startx': '320', 'starty': '0', 'endx': '480', 'endy': '480', 'color': 'blue'}
-    ],
-
-    # 26
-    [
-        {'startx': '0', 'starty': '0', 'endx': '100', 'endy': '380', 'color': 'blue'},
-        {'startx': '100', 'starty': '0', 'endx': '480', 'endy': '380', 'color': 'yellow'},
-        {'startx': '0', 'starty': '380', 'endx': '100', 'endy': '480', 'color': 'white'},
-        {'startx': '100', 'starty': '380', 'endx': '480', 'endy': '480', 'color': 'red'}
-    ],
-
-    # 27
-    [
-        {'startx': '0', 'starty': '0', 'endx': '360', 'endy': '50', 'color': 'yellow'},
-        {'startx': '0', 'starty': '50', 'endx': '360', 'endy': '100', 'color': 'white'},
-        {'startx': '0', 'starty': '100', 'endx': '180', 'endy': '480', 'color': 'white'},
-        {'startx': '180', 'starty': '100', 'endx': '360', 'endy': '480', 'color': 'red'},
-        {'startx': '360', 'starty': '0', 'endx': '480', 'endy': '70', 'color': 'white'},
-        {'startx': '360', 'starty': '70', 'endx': '480', 'endy': '280', 'color': 'white'},
-        {'startx': '360', 'starty': '280', 'endx': '480', 'endy': '480', 'color': 'yellow'}
-    ]
-]
 
 # @csrf_exempt
 def render_question_page(request, questionMap):
@@ -391,20 +75,27 @@ def start_multiple_choices(request):
     for i in range(0, 27):
         imagePath="static/hash_images/"+uid+"-i"+str(iteration_num)+"-"+str(i)+".png";
         iteration_image_list.append(imagePath);
-    return render(request, multiple_choice_codename + '/index.html',
-                  {'testList':iteration_image_list,
-                   'testTitle':"'Mondrian Painting #'",
-                   'testHintText':"'Choose the images you like'",
-                   'testScoreHintText':"'Score the chosen images'",
-                   'testDriveHintText':"'Use A(left), W(mid), D(right) to select the group contains the most image you like'",
-                   'testDriveConfirmText':"'Hit the same key again to confirm, or S(back) to cancel'",
-                   'testSingleIndex':singleIndex,
-                   'testUIIndex':uiIndex,
-                   'testIteration':iteration_num,
-                   'uid':uid,
-                   'progressValue':iteration_num,
-                   'progressTotal':len(multiple_ui),
-                   'imageGene':iterationImageGene});
+    multiple_parameters={'testList':iteration_image_list,
+                         'testTitle':"'Mondrian Painting #'",
+                         'testHintText':"'Choose the images you like'",
+                         'testScoreHintText':"'Score the chosen images'",
+                         'testDriveHintText':"'Use A(left), W(mid), D(right) to select the group contains the most image you like'",
+                         'testDriveConfirmText':"'Hit the same key again to confirm, or S(back) to cancel'",
+                         'testSingleIndex':singleIndex,
+                         'testUIIndex':uiIndex,
+                         'testIteration':iteration_num,
+                         'uid':uid,
+                         'progressValue':iteration_num,
+                         'progressTotal':len(multiple_ui),
+                         'imageGene':iterationImageGene};
+    # Check iteration.
+    if iteration_num==0:
+        multiple_parameters['testInstructionTitle']='"Part 4 - Multiple Images Selection UI Experiment"';
+        multiple_parameters['testInstructionText']='"In the following section, you have to use ' + str(len(multiple_ui)) + ' user interfaces to choose Mondrian\'s Neo-Plasticism style paintings from all the candidate paintings. After you choose the painting, you may have to rate the paintings according to the instruction.</p><p>In the experiment, you will be tested with list, grid, driving simulator and card selection user interfaces. In some of them, you have to provide responses for the images you choose with heart rating and slider widgets.</p><p>Click \'start\' when you are ready."';
+    else:
+        multiple_parameters['testInstructionTitle']='""';
+        multiple_parameters['testInstructionText']='""';
+    return render(request, multiple_choice_codename + '/index.html', multiple_parameters);
 
 # @csrf_exempt
 def start_initial_test(request):
@@ -412,105 +103,541 @@ def start_initial_test(request):
     uid=request.COOKIES.get('uid', 'none');
     if(uid=='none'):
         return HttpResponseNotFound('<h1>Invalid Request</h1>');
+    # Set the randomize seed.
+    random.seed(int(time.time()));
+    # Generate the UI gene list.
+    # Initial static 27 images genes.
+    single_ui_image_raw_gene = [
+        # 1
+        [
+            {'startx': '0', 'starty': '0', 'endx': '480', 'endy': '130', 'color': 'red'},
+            {'startx': '0', 'starty': '130', 'endx': '280', 'endy': '480', 'color': 'yellow'},
+            {'startx': '280', 'starty': '130', 'endx': '480', 'endy': '300', 'color': 'white'},
+            {'startx': '280', 'starty': '300', 'endx': '480', 'endy': '480', 'color': 'blue'}
+        ],
+
+        # 2
+        [
+            {'startx': '0', 'starty': '0', 'endx': '100', 'endy': '320', 'color': 'red'},
+            {'startx': '0', 'starty': '320', 'endx': '100', 'endy': '480', 'color': 'white'},
+            {'startx': '100', 'starty': '0', 'endx': '330', 'endy': '160', 'color': 'white'},
+            {'startx': '100', 'starty': '160', 'endx': '330', 'endy': '480', 'color': 'white'},
+            {'startx': '330', 'starty': '0', 'endx': '480', 'endy': '230', 'color': 'blue'},
+            {'startx': '330', 'starty': '230', 'endx': '480', 'endy': '480', 'color': 'yellow'}
+        ],
+
+        # 3
+        [
+            {'startx': '0', 'starty': '0', 'endx': '170', 'endy': '180', 'color': 'red'},
+            {'startx': '170', 'starty': '0', 'endx': '325', 'endy': '180', 'color': 'white'},
+            {'startx': '325', 'starty': '0', 'endx': '480', 'endy': '180', 'color': 'yellow'},
+            {'startx': '0', 'starty': '180', 'endx': '170', 'endy': '370', 'color': 'white'},
+            {'startx': '0', 'starty': '370', 'endx': '170', 'endy': '480', 'color': 'yellow'},
+            {'startx': '170', 'starty': '180', 'endx': '480', 'endy': '330', 'color': 'blue'},
+            {'startx': '170', 'starty': '330', 'endx': '480', 'endy': '480', 'color': 'red'}
+        ],
+
+        # 4
+        [
+            {'startx': '0', 'starty': '0', 'endx': '140', 'endy': '100', 'color': 'blue'},
+            {'startx': '140', 'starty': '0', 'endx': '480', 'endy': '100', 'color': 'white'},
+            {'startx': '0', 'starty': '100', 'endx': '480', 'endy': '210', 'color': 'yellow'},
+            {'startx': '0', 'starty': '210', 'endx': '330', 'endy': '480', 'color': 'white'},
+            {'startx': '330', 'starty': '210', 'endx': '480', 'endy': '480', 'color': 'red'}
+        ],
+
+        # 5
+        [
+            {'startx': '0', 'starty': '0', 'endx': '150', 'endy': '70', 'color': 'red'},
+            {'startx': '0', 'starty': '70', 'endx': '150', 'endy': '280', 'color': 'white'},
+            {'startx': '0', 'starty': '280', 'endx': '150', 'endy': '480', 'color': 'yellow'},
+            {'startx': '150', 'starty': '0', 'endx': '300', 'endy': '140', 'color': 'yellow'},
+            {'startx': '150', 'starty': '140', 'endx': '300', 'endy': '280', 'color': 'white'},
+            {'startx': '150', 'starty': '280', 'endx': '300', 'endy': '480', 'color': 'blue'},
+            {'startx': '300', 'starty': '0', 'endx': '480', 'endy': '280', 'color': 'blue'},
+            {'startx': '300', 'starty': '280', 'endx': '480', 'endy': '480', 'color': 'white'}
+        ],
+
+        # 6
+        [
+            {'startx': '0', 'starty': '0', 'endx': '70', 'endy': '70', 'color': 'yellow'},
+            {'startx': '70', 'starty': '0', 'endx': '410', 'endy': '70', 'color': 'red'},
+            {'startx': '410', 'starty': '0', 'endx': '480', 'endy': '70', 'color': 'yellow'},
+            {'startx': '0', 'starty': '70', 'endx': '70', 'endy': '410', 'color': 'red'},
+            {'startx': '70', 'starty': '70', 'endx': '240', 'endy': '240', 'color': 'blue'},
+            {'startx': '240', 'starty': '70', 'endx': '410', 'endy': '240', 'color': 'blue'},
+            {'startx': '70', 'starty': '240', 'endx': '240', 'endy': '410', 'color': 'blue'},
+            {'startx': '240', 'starty': '240', 'endx': '410', 'endy': '410', 'color': 'blue'},
+            {'startx': '410', 'starty': '70', 'endx': '480', 'endy': '410', 'color': 'red'},
+            {'startx': '0', 'starty': '410', 'endx': '70', 'endy': '480', 'color': 'yellow'},
+            {'startx': '70', 'starty': '410', 'endx': '410', 'endy': '480', 'color': 'red'},
+            {'startx': '410', 'starty': '410', 'endx': '480', 'endy': '480', 'color': 'yellow'}
+
+        ],
+
+        # 7
+        [
+            {'startx': '0', 'starty': '0', 'endx': '140', 'endy': '480', 'color': 'red'},
+            {'startx': '140', 'starty': '0', 'endx': '480', 'endy': '100', 'color': 'white'},
+            {'startx': '140', 'starty': '100', 'endx': '300', 'endy': '480', 'color': 'yellow'},
+            {'startx': '300', 'starty': '100', 'endx': '480', 'endy': '240', 'color': 'white'},
+            {'startx': '300', 'starty': '240', 'endx': '390', 'endy': '480', 'color': 'blue'},
+            {'startx': '390', 'starty': '240', 'endx': '480', 'endy': '360', 'color': 'white'},
+            {'startx': '390', 'starty': '360', 'endx': '480', 'endy': '480', 'color': 'white'}
+        ],
+
+        # 8
+        [
+            {'startx': '0', 'starty': '0', 'endx': '120', 'endy': '100', 'color': 'red'},
+            {'startx': '120', 'starty': '0', 'endx': '340', 'endy': '100', 'color': 'white'},
+            {'startx': '340', 'starty': '0', 'endx': '480', 'endy': '100', 'color': 'yellow'},
+            {'startx': '0', 'starty': '100', 'endx': '240', 'endy': '200', 'color': 'white'},
+            {'startx': '0', 'starty': '200', 'endx': '240', 'endy': '480', 'color': 'blue'},
+            {'startx': '240', 'starty': '100', 'endx': '480', 'endy': '320', 'color': 'white'},
+            {'startx': '240', 'starty': '320', 'endx': '480', 'endy': '480', 'color': 'yellow'}
+        ],
+
+        # 9
+        [
+            {'startx': '0', 'starty': '0', 'endx': '160', 'endy': '140', 'color': 'yellow'},
+            {'startx': '0', 'starty': '140', 'endx': '160', 'endy': '480', 'color': 'white'},
+            {'startx': '160', 'starty': '0', 'endx': '480', 'endy': '330', 'color': 'red'},
+            {'startx': '160', 'starty': '330', 'endx': '340', 'endy': '480', 'color': 'blue'},
+            {'startx': '340', 'starty': '330', 'endx': '480', 'endy': '480', 'color': 'white'}
+        ],
+
+        # 10
+        [
+            {'startx': '0', 'starty': '0', 'endx': '370', 'endy': '100', 'color': 'white'},
+            {'startx': '370', 'starty': '0', 'endx': '480', 'endy': '100', 'color': 'blue'},
+            {'startx': '0', 'starty': '100', 'endx': '110', 'endy': '480', 'color': 'red'},
+            {'startx': '110', 'starty': '100', 'endx': '210', 'endy': '290', 'color': 'white'},
+            {'startx': '110', 'starty': '290', 'endx': '210', 'endy': '480', 'color': 'white'},
+            {'startx': '210', 'starty': '100', 'endx': '480', 'endy': '290', 'color': 'white'},
+            {'startx': '210', 'starty': '290', 'endx': '480', 'endy': '480', 'color': 'yellow'}
+        ],
+
+        # 11
+        [
+            {'startx': '0', 'starty': '0', 'endx': '160', 'endy': '160', 'color': 'red'},
+            {'startx': '160', 'starty': '0', 'endx': '320', 'endy': '160', 'color': 'white'},
+            {'startx': '320', 'starty': '0', 'endx': '480', 'endy': '160', 'color': 'yellow'},
+            {'startx': '0', 'starty': '160', 'endx': '160', 'endy': '320', 'color': 'white'},
+            {'startx': '160', 'starty': '160', 'endx': '320', 'endy': '320', 'color': 'blue'},
+            {'startx': '320', 'starty': '160', 'endx': '480', 'endy': '320', 'color': 'white'},
+            {'startx': '0', 'starty': '320', 'endx': '160', 'endy': '480', 'color': 'yellow'},
+            {'startx': '160', 'starty': '320', 'endx': '320', 'endy': '480', 'color': 'white'},
+            {'startx': '320', 'starty': '320', 'endx': '480', 'endy': '480', 'color': 'red'}
+        ],
+
+        # 12
+        [
+            {'startx': '0', 'starty': '0', 'endx': '480', 'endy': '230', 'color': 'blue'},
+            {'startx': '0', 'starty': '230', 'endx': '240', 'endy': '480', 'color': 'yellow'},
+            {'startx': '240', 'starty': '230', 'endx': '480', 'endy': '340', 'color': 'white'},
+            {'startx': '240', 'starty': '340', 'endx': '360', 'endy': '480', 'color': 'red'},
+            {'startx': '360', 'starty': '340', 'endx': '480', 'endy': '410', 'color': 'yellow'},
+            {'startx': '360', 'starty': '410', 'endx': '420', 'endy': '480', 'color': 'white'},
+            {'startx': '420', 'starty': '410', 'endx': '480', 'endy': '480', 'color': 'red'}
+        ],
+
+        # 13
+        [
+            {'startx': '0', 'starty': '0', 'endx': '160', 'endy': '320', 'color': 'red'},
+            {'startx': '160', 'starty': '0', 'endx': '480', 'endy': '160', 'color': 'blue'},
+            {'startx': '320', 'starty': '160', 'endx': '480', 'endy': '480', 'color': 'yellow'},
+            {'startx': '0', 'starty': '320', 'endx': '320', 'endy': '480', 'color': 'white'},
+            {'startx': '160', 'starty': '160', 'endx': '320', 'endy': '320', 'color': 'white'}
+        ],
+
+        # 14
+        [
+            {'startx': '0', 'starty': '0', 'endx': '290', 'endy': '180', 'color': 'white'},
+            {'startx': '0', 'starty': '180', 'endx': '190', 'endy': '300', 'color': 'yellow'},
+            {'startx': '190', 'starty': '180', 'endx': '290', 'endy': '300', 'color': 'blue'},
+            {'startx': '0', 'starty': '300', 'endx': '290', 'endy': '480', 'color': 'white'},
+            {'startx': '290', 'starty': '0', 'endx': '480', 'endy': '480', 'color': 'red'}
+        ],
+
+        # 15
+        [
+            {'startx': '0', 'starty': '0', 'endx': '360', 'endy': '110', 'color': 'white'},
+            {'startx': '360', 'starty': '0', 'endx': '480', 'endy': '110', 'color': 'white'},
+            {'startx': '0', 'starty': '110', 'endx': '360', 'endy': '160', 'color': 'white'},
+            {'startx': '360', 'starty': '110', 'endx': '480', 'endy': '160', 'color': 'red'},
+            {'startx': '0', 'starty': '160', 'endx': '100', 'endy': '480', 'color': 'blue'},
+            {'startx': '100', 'starty': '160', 'endx': '360', 'endy': '250', 'color': 'white'},
+            {'startx': '100', 'starty': '250', 'endx': '360', 'endy': '480', 'color': 'white'},
+            {'startx': '360', 'starty': '160', 'endx': '480', 'endy': '360', 'color': 'white'},
+            {'startx': '360', 'starty': '360', 'endx': '480', 'endy': '480', 'color': 'blue'}
+        ],
+
+        # 16
+        [
+            {'startx': '0', 'starty': '0', 'endx': '110', 'endy': '480', 'color': 'red'},
+            {'startx': '110', 'starty': '0', 'endx': '350', 'endy': '180', 'color': 'white'},
+            {'startx': '350', 'starty': '0', 'endx': '480', 'endy': '180', 'color': 'yellow'},
+            {'startx': '110', 'starty': '180', 'endx': '200', 'endy': '320', 'color': 'white'},
+            {'startx': '200', 'starty': '180', 'endx': '290', 'endy': '320', 'color': 'red'},
+            {'startx': '110', 'starty': '320', 'endx': '290', 'endy': '480', 'color': 'white'},
+            {'startx': '290', 'starty': '180', 'endx': '480', 'endy': '480', 'color': 'yellow'}
+        ],
+
+        # 17
+        [
+            {'startx': '0', 'starty': '0', 'endx': '360', 'endy': '150', 'color': 'yellow'},
+            {'startx': '360', 'starty': '0', 'endx': '480', 'endy': '150', 'color': 'blue'},
+            {'startx': '0', 'starty': '150', 'endx': '160', 'endy': '480', 'color': 'blue'},
+            {'startx': '160', 'starty': '150', 'endx': '480', 'endy': '270', 'color': 'white'},
+            {'startx': '160', 'starty': '270', 'endx': '320', 'endy': '480', 'color': 'white'},
+            {'startx': '320', 'starty': '270', 'endx': '480', 'endy': '480', 'color': 'red'},
+        ],
+
+        # 18
+        [
+            {'startx': '0', 'starty': '0', 'endx': '60', 'endy': '60', 'color': 'white'},
+            {'startx': '60', 'starty': '0', 'endx': '120', 'endy': '60', 'color': 'white'},
+            {'startx': '120', 'starty': '0', 'endx': '360', 'endy': '60', 'color': 'white'},
+            {'startx': '360', 'starty': '0', 'endx': '420', 'endy': '60', 'color': 'white'},
+            {'startx': '480', 'starty': '0', 'endx': '480', 'endy': '60', 'color': 'white'},
+            {'startx': '0', 'starty': '60', 'endx': '60', 'endy': '120', 'color': 'white'},
+            {'startx': '60', 'starty': '60', 'endx': '120', 'endy': '120', 'color': 'white'},
+            {'startx': '120', 'starty': '60', 'endx': '360', 'endy': '120', 'color': 'white'},
+            {'startx': '360', 'starty': '60', 'endx': '420', 'endy': '120', 'color': 'blue'},
+            {'startx': '480', 'starty': '60', 'endx': '480', 'endy': '120', 'color': 'white'},
+            {'startx': '0', 'starty': '120', 'endx': '60', 'endy': '360', 'color': 'yellow'},
+            {'startx': '60', 'starty': '120', 'endx': '120', 'endy': '360', 'color': 'white'},
+            {'startx': '120', 'starty': '120', 'endx': '360', 'endy': '360', 'color': 'white'},
+            {'startx': '360', 'starty': '120', 'endx': '420', 'endy': '360', 'color': 'white'},
+            {'startx': '420', 'starty': '120', 'endx': '480', 'endy': '360', 'color': 'white'},
+            {'startx': '0', 'starty': '360', 'endx': '60', 'endy': '420', 'color': 'white'},
+            {'startx': '60', 'starty': '360', 'endx': '120', 'endy': '420', 'color': 'white'},
+            {'startx': '120', 'starty': '360', 'endx': '360', 'endy': '420', 'color': 'white'},
+            {'startx': '360', 'starty': '360', 'endx': '420', 'endy': '420', 'color': 'white'},
+            {'startx': '420', 'starty': '360', 'endx': '480', 'endy': '420', 'color': 'white'},
+            {'startx': '0', 'starty': '420', 'endx': '60', 'endy': '480', 'color': 'white'},
+            {'startx': '60', 'starty': '420', 'endx': '120', 'endy': '480', 'color': 'white'},
+            {'startx': '120', 'starty': '420', 'endx': '360', 'endy': '480', 'color': 'white'},
+            {'startx': '360', 'starty': '420', 'endx': '420', 'endy': '480', 'color': 'white'},
+            {'startx': '420', 'starty': '420', 'endx': '480', 'endy': '480', 'color': 'white'}
+        ],
+
+        # 19
+        [
+            {'startx': '0', 'starty': '0', 'endx': '140', 'endy': '480', 'color': 'red'},
+            {'startx': '140', 'starty': '0', 'endx': '480', 'endy': '120', 'color': 'white'},
+            {'startx': '140', 'starty': '120', 'endx': '390', 'endy': '300', 'color': 'blue'},
+            {'startx': '390', 'starty': '120', 'endx': '480', 'endy': '300', 'color': 'white'},
+            {'startx': '140', 'starty': '300', 'endx': '270', 'endy': '480', 'color': 'white'},
+            {'startx': '270', 'starty': '300', 'endx': '480', 'endy': '480', 'color': 'yellow'}
+        ],
+
+        # 20
+        [
+            {'startx': '0', 'starty': '0', 'endx': '60', 'endy': '130', 'color': 'white'},
+            {'startx': '60', 'starty': '0', 'endx': '250', 'endy': '130', 'color': 'yellow'},
+            {'startx': '250', 'starty': '0', 'endx': '370', 'endy': '130', 'color': 'white'},
+            {'startx': '370', 'starty': '0', 'endx': '480', 'endy': '130', 'color': 'blue'},
+            {'startx': '0', 'starty': '130', 'endx': '60', 'endy': '480', 'color': 'yellow'},
+            {'startx': '60', 'starty': '130', 'endx': '250', 'endy': '310', 'color': 'red'},
+            {'startx': '250', 'starty': '130', 'endx': '480', 'endy': '310', 'color': 'white'},
+            {'startx': '60', 'starty': '310', 'endx': '250', 'endy': '480', 'color': 'white'},
+            {'startx': '250', 'starty': '310', 'endx': '480', 'endy': '480', 'color': 'blue'}
+        ],
+
+        # 21
+        [
+            {'startx': '0', 'starty': '0', 'endx': '80', 'endy': '70', 'color': 'red'},
+            {'startx': '80', 'starty': '0', 'endx': '130', 'endy': '70', 'color': 'white'},
+            {'startx': '130', 'starty': '0', 'endx': '480', 'endy': '70', 'color': 'white'},
+            {'startx': '0', 'starty': '70', 'endx': '80', 'endy': '480', 'color': 'white'},
+            {'startx': '80', 'starty': '70', 'endx': '130', 'endy': '130', 'color': 'white'},
+            {'startx': '130', 'starty': '70', 'endx': '480', 'endy': '130', 'color': 'red'},
+            {'startx': '80', 'starty': '130', 'endx': '130', 'endy': '480', 'color': 'white'},
+            {'startx': '130', 'starty': '130', 'endx': '200', 'endy': '220', 'color': 'white'},
+            {'startx': '200', 'starty': '130', 'endx': '480', 'endy': '220', 'color': 'white'},
+            {'startx': '130', 'starty': '220', 'endx': '200', 'endy': '480', 'color': 'yellow'},
+            {'startx': '200', 'starty': '220', 'endx': '480', 'endy': '480', 'color': 'white'}
+        ],
+
+        # 22
+        [
+            {'startx': '0', 'starty': '0', 'endx': '70', 'endy': '60', 'color': 'white'},
+            {'startx': '70', 'starty': '0', 'endx': '410', 'endy': '60', 'color': 'white'},
+            {'startx': '410', 'starty': '0', 'endx': '480', 'endy': '60', 'color': 'blue'},
+            {'startx': '0', 'starty': '60', 'endx': '70', 'endy': '350', 'color': 'white'},
+            {'startx': '0', 'starty': '350', 'endx': '70', 'endy': '480', 'color': 'white'},
+            {'startx': '70', 'starty': '60', 'endx': '410', 'endy': '150', 'color': 'white'},
+            {'startx': '70', 'starty': '150', 'endx': '300', 'endy': '480', 'color': 'yellow'},
+            {'startx': '300', 'starty': '150', 'endx': '410', 'endy': '480', 'color': 'white'},
+            {'startx': '410', 'starty': '60', 'endx': '480', 'endy': '480', 'color': 'white'}
+        ],
+
+        # 23
+        [
+            {'startx': '0', 'starty': '0', 'endx': '120', 'endy': '80', 'color': 'blue'},
+            {'startx': '120', 'starty': '0', 'endx': '150', 'endy': '80', 'color': 'yellow'},
+            {'startx': '150', 'starty': '0', 'endx': '480', 'endy': '80', 'color': 'blue'},
+            {'startx': '0', 'starty': '80', 'endx': '120', 'endy': '120', 'color': 'yellow'},
+            {'startx': '120', 'starty': '80', 'endx': '150', 'endy': '120', 'color': 'white'},
+            {'startx': '150', 'starty': '80', 'endx': '480', 'endy': '120', 'color': 'yellow'},
+            {'startx': '0', 'starty': '120', 'endx': '120', 'endy': '480', 'color': 'blue'},
+            {'startx': '120', 'starty': '120', 'endx': '150', 'endy': '480', 'color': 'yellow'},
+            {'startx': '150', 'starty': '120', 'endx': '480', 'endy': '480', 'color': 'blue'}
+        ],
+
+        # 24
+        [
+            {'startx': '0', 'starty': '0', 'endx': '480', 'endy': '90', 'color': 'white'},
+            {'startx': '0', 'starty': '90', 'endx': '96', 'endy': '390', 'color': 'yellow'},
+            {'startx': '96', 'starty': '90', 'endx': '192', 'endy': '390', 'color': 'white'},
+            {'startx': '192', 'starty': '90', 'endx': '288', 'endy': '390', 'color': 'white'},
+            {'startx': '288', 'starty': '90', 'endx': '384', 'endy': '390', 'color': 'yellow'},
+            {'startx': '384', 'starty': '90', 'endx': '480', 'endy': '390', 'color': 'white'},
+            {'startx': '0', 'starty': '390', 'endx': '480', 'endy': '480', 'color': 'blue'}
+        ],
+
+        # 25
+        [
+            {'startx': '0', 'starty': '0', 'endx': '160', 'endy': '480', 'color': 'red'},
+            {'startx': '160', 'starty': '0', 'endx': '320', 'endy': '480', 'color': 'white'},
+            {'startx': '320', 'starty': '0', 'endx': '480', 'endy': '480', 'color': 'blue'}
+        ],
+
+        # 26
+        [
+            {'startx': '0', 'starty': '0', 'endx': '100', 'endy': '380', 'color': 'blue'},
+            {'startx': '100', 'starty': '0', 'endx': '480', 'endy': '380', 'color': 'yellow'},
+            {'startx': '0', 'starty': '380', 'endx': '100', 'endy': '480', 'color': 'white'},
+            {'startx': '100', 'starty': '380', 'endx': '480', 'endy': '480', 'color': 'red'}
+        ],
+
+        # 27
+        [
+            {'startx': '0', 'starty': '0', 'endx': '360', 'endy': '50', 'color': 'yellow'},
+            {'startx': '0', 'starty': '50', 'endx': '360', 'endy': '100', 'color': 'white'},
+            {'startx': '0', 'starty': '100', 'endx': '180', 'endy': '480', 'color': 'white'},
+            {'startx': '180', 'starty': '100', 'endx': '360', 'endy': '480', 'color': 'red'},
+            {'startx': '360', 'starty': '0', 'endx': '480', 'endy': '70', 'color': 'white'},
+            {'startx': '360', 'starty': '70', 'endx': '480', 'endy': '280', 'color': 'white'},
+            {'startx': '360', 'starty': '280', 'endx': '480', 'endy': '480', 'color': 'yellow'}
+        ]
+    ];
+    single_ui_image_raw_url=['static/images/1.png',
+                             'static/images/2.png',
+                             'static/images/3.png',
+                             'static/images/4.png',
+                             'static/images/5.png',
+                             'static/images/6.png',
+                             'static/images/7.png',
+                             'static/images/8.png',
+                             'static/images/9.png',
+                             'static/images/10.png',
+                             'static/images/11.png',
+                             'static/images/12.png',
+                             'static/images/13.png',
+                             'static/images/14.png',
+                             'static/images/15.png',
+                             'static/images/16.png',
+                             'static/images/17.png',
+                             'static/images/18.png',
+                             'static/images/19.png',
+                             'static/images/20.png',
+                             'static/images/21.png',
+                             'static/images/22.png',
+                             'static/images/23.png',
+                             'static/images/24.png',
+                             'static/images/25.png',
+                             'static/images/26.png',
+                             'static/images/27.png'];
+    # Generate the image index list.
+    single_ui_image_index=list(range(len(single_ui_image_raw_url)));
+    # Shuffle the list.
+    random.shuffle(single_ui_image_index);
+    print(single_ui_image_index);
+    # Rebuild the image list.
+    single_ui_image_url=[];
+    single_ui_image_gene=[];
+    for i in range(len(single_ui_image_index)):
+        single_ui_image_url.append(single_ui_image_raw_url[single_ui_image_index[i]]);
+        single_ui_image_gene.append(single_ui_image_raw_gene[single_ui_image_index[i]]);
+
+    # Generate the UI list.
+    single_ui_list=[0,
+                    0,0,0,0,
+                    1,1,1,1,1,
+                    2,2,2,2,2,
+                    3,3,3,3,3,
+                    4,4,4,4,4,4,
+                    4];
+    # Shuffle the UI list.
+    random.shuffle(single_ui_list);
+    # After shuffle the UI list, generate the UI helper list.
+    single_ui_hint=[];
+    single_ui_label=[];
+    # Loop until all the UI has been tested.
+    for i in range(len(single_ui_list)):
+        if single_ui_list[i]==0 or single_ui_list[i]==1:
+            single_ui_hint.append('Do you like this image?');
+            single_ui_label.append([]);
+        else:
+            single_ui_hint.append('Please indicate how much you like the image?');
+            single_ui_label.append(['Dislike', 'So-so', 'Like']);
     return render(request, single_choice_codename + '/index.html',
-                  {'testImage': ['static/images/1.png',
-                                #  'static/images/2.png',
-                                #  'static/images/3.png',
-                                #  'static/images/4.png',
-                                #  'static/images/5.png',
-                                #  'static/images/6.png',
-                                #  'static/images/7.png',
-                                #  'static/images/8.png',
-                                #  'static/images/9.png',
-                                #  'static/images/10.png',
-                                #  'static/images/11.png',
-                                #  'static/images/12.png',
-                                #  'static/images/13.png',
-                                #  'static/images/14.png',
-                                #  'static/images/15.png',
-                                #  'static/images/16.png',
-                                #  'static/images/17.png',
-                                #  'static/images/18.png',
-                                #  'static/images/19.png',
-                                #  'static/images/20.png',
-                                #  'static/images/21.png',
-                                #  'static/images/22.png',
-                                #  'static/images/23.png',
-                                #  'static/images/24.png',
-                                #  'static/images/25.png',
-                                #  'static/images/26.png',
-                                 'static/images/27.png'],
-                    'testList': [0,
-                                #  0,0,0,0,
-                                #  1,1,1,1,1,
-                                #  2,2,2,2,2,
-                                #  3,3,3,3,3,
-                                #  4,4,4,4,4,4,
-                                 4],
-                    'testHintText': ['Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Do you like this image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                    #  'Please indicate how much you like the image?',
-                                     'Please indicate how much you like the image?'],
-                    'testLabel': [[],
-                                #   [],
-                                #   [],
-                                #   [],
-                                #   [],
-                                #   [],
-                                #   [],
-                                #   [],
-                                #   [],
-                                #   [],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                #   ['Dislike', 'So-so', 'Like'],
-                                  ['Dislike', 'So-so', 'Like']],
-                    'testRadioMaximum': 7,
-                    'testInstructionTitle': '"Part 2 - Single Image Response Experiment"',
-                    'testInstructionText': '"In the following experiment, you have to rate 20 Mondrian\'s Neo-Plasticism style paintings. You have to score each image as how much you like it, but not how much artistic value it has.</p><p>In the experiment, you will use buttons, stars and sliders to score the paintings.</p><p>Click \'start\' when you are ready."',
-                    'imageGene' : imageList});
+                  {'testImage': single_ui_image_url,
+                   'testList': single_ui_list,
+                   'testHintText': single_ui_hint,
+                   'testLabel': single_ui_label,
+                   'testRadioMaximum': 7,
+                   'testInstructionTitle': '"Part 2 - Single Image Response UI Experiment"',
+                   'testInstructionText': '"In the following section, you have to rate ' + str(len(single_ui_list)) + ' Mondrian\'s Neo-Plasticism style paintings. You have to score each image as how much you like it, but not how much artistic value it has.</p><p>In the experiment, you will use buttons, stars and sliders to score the paintings.</p><p>Click \'start\' when you are ready."',
+                   'imageGene' : single_ui_image_gene,
+                   'submitUrl' : '"/saveinitial"'});
 
 def add_question(questionMap, questionType, questionText, questionExplain, questionSetting):
     questionMap['questionTypes'].append(questionType.value);
     questionMap['questionTexts'].append(questionText);
     questionMap['questionExplains'].append(questionExplain);
     questionMap['questionSettings'].append(questionSetting);
+
+def generate_empty_question_map():
+    return {'questionTypes': [],
+            'questionTexts': [],
+            'questionExplains': [],
+            'questionSettings': []};
+
+def start_multiple_question(request):
+    # Get the uid.
+    uid=request.GET.get('uid');
+    # Generate the question.
+    questionMap=generate_empty_question_map();
+    # Generate the UI list.
+    ui_list=["List user interface",
+             "Grid user interface",
+             "Driving simulator user interface",
+             "Card selection user interface"];
+    # Add questions.
+    add_question(questionMap, Question_Type.Radio,
+                 "Which user interface you like most?",
+                 "Please select the UI you like most appears in the last section of experiment.",
+                 {"values":ui_list});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you like that user interface?",
+                 "Please write down your reason below.",
+                 {"defaultText": "Input your reason here."});
+
+    add_question(questionMap, Question_Type.Checkbox,
+                 "Which user interface helps you make your decision?",
+                 "Some of them might helps you to choose the selection much quicker, and it won't bother you to express your idea. Select <strong>all</strong> the user interfaces that you think they help you to make decisions much quicker.",
+                 {"values":ui_list});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you think those user interfaces help you to make the decision?",
+                 "Please write down your reason below. If you didn't select any user interface in the last question, please type 'Nothing' in the box.",
+                 {"defaultText": "Input your reason here."});
+
+    add_question(questionMap, Question_Type.Checkbox,
+                 "Which user interface slows you down?",
+                 "Some of them might slow you down to make the decision due to its design or your personal preference. Select <strong>all</strong> the user interfaces that you think they slow you down.",
+                 {"values":ui_list});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you think those user interfaces slow you down?",
+                 "Please write down your reason below. If you didn't select any user interface in the last question, please type 'Nothing' in the box.",
+                 {"defaultText": "Input your reason here."});
+
+    add_question(questionMap, Question_Type.Radio,
+                 "Which user interface you think is the most complex?",
+                 "Please select the UI you feel is the most complex among all these user interface.",
+                 {"values":ui_list});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you like that user interface is the most complex?",
+                 "Please write down your reason below.",
+                 {"defaultText": "Input your reason here."});
+
+    add_question(questionMap, Question_Type.Checkbox,
+                 "Which user interface helps you make your decision?",
+                 "Some of them might helps you to choose the selection much quicker, and it won't bother you to express your idea.",
+                 {"values":ui_list});
+
+    add_question(questionMap, Question_Type.Combo,
+                 "Which widget would you prefer for providing response for a single image?",
+                 "In some user interfaces, you were asking for choosing the score for the selected images. In the experiment, you should meet two kinds of widgets: heart rating and slider. Select the one you prefer to use.",
+                 {"defaultText":"Your prefer widget",
+                  "values":[["Heart Rating", "0",
+                             "Slider", "1"]]});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you prefer that rating widget?",
+                 "Please write down your reason below.",
+                 {"defaultText": "Input your reason here."});
+
+    add_question(questionMap, Question_Type.Combo,
+                 "Do you think the rating widget affect your choosing experience?",
+                 "You may thought that the rating widget affects your experiment, including your expression, your selection speed and even your emotion. Please select your answer below.",
+                 {"defaultText":"Answer",
+                  "values": [["Yes", "1"],
+                             ["No", "0"]]});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you think the rating widget affect your experience or it not affect?",
+                 "According to the answer you give to the last question, please express your reason below.",
+                 {"defaultText": "Input your reason here."});
+
+    questionMap["questionInstructionTitle"]='\"Part 5 - Multiple Image Response UI Question\"';
+    questionMap['questionInstructionText'] = '"This is the last part of the experiment. In this part, you have to answer several questions which related to the multiple images selection UI experiment section. These questions are important to the experiment and it will affect the result of the experiment. So please answer these questions seriously.</p><p>Click \'start\' when you are ready."';
+    questionMap['submitUrl']='"/sendsinglequestionresult"';
+    questionMap['uid']='"'+uid+'"';
+    # Start to rendering the data.
+    return render_question_page(request, questionMap);
+
+def start_single_question(request):
+    # Get the uid.
+    uid=request.GET.get('uid');
+    # Generate the question.
+    questionMap=generate_empty_question_map();
+    # Generate the UI list.
+    ui_list=["Single 'Like' button", "'Like' and 'Dislike' button group",
+             "Radio button groups", "Red heart rating", "Slider rating"];
+    # Add questions.
+    add_question(questionMap, Question_Type.Radio,
+                 "Which user interface you like most?",
+                 "Please select the UI you like most appears in the last section of experiment.",
+                 {"values":ui_list});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you like that user interface?",
+                 "Please write down your reason below.",
+                 {"defaultText": "Input your reason here."});
+
+    add_question(questionMap, Question_Type.Checkbox,
+                 "Which user interface helps you make your decision?",
+                 "Some of them might helps you to choose the selection much quicker, and it won't bother you to express your idea.",
+                 {"values":ui_list});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you think those user interface help you to make the decision?",
+                 "Please write down your reason below. If you didn't select any user interface, please type 'Nothing' in the box.",
+                 {"defaultText": "Input your reason here."});
+
+    add_question(questionMap, Question_Type.Checkbox,
+                 "Which user interface makes you think it affects your expression?",
+                 "Some of these user interface might limited you to express your idea of the image. If any of those exists, please select them below.",
+                 {"values":ui_list});
+
+    add_question(questionMap, Question_Type.Text,
+                 "Why you think those user interface affect your expression?",
+                 "Please write down your reason below. If you didn't select any user interface, please type 'Nothing' in the box.",
+                 {"defaultText": "Input your reason here."});
+
+    questionMap["questionInstructionTitle"]='\"Part 3 - Single Image Response UI Question\"';
+    questionMap['questionInstructionText'] = '"In this part, you have to answer several questions which related to the single image response UI experiment section. These questions are important to the experiment and it will affect the result of the experiment. So please answer these questions seriously.</p><p>Click \'start\' when you are ready."';
+    questionMap['submitUrl']='"/sendsinglequestionresult"';
+    questionMap['uid']='"'+uid+'"';
+    # Start to rendering the data.
+    return render_question_page(request, questionMap);
 
 # @csrf_exempt
 def start_question(request):
@@ -949,8 +1076,11 @@ def start_question(request):
                  "Do you know Neo-Plasticism style painting?",
                  "It is also known as De Stijl. Do you know this painting style before?",
                  {"values": ["Yes", "No"]});
+
     questionMap["questionInstructionTitle"]='\"Part 1 - Basic Questions\"';
-    questionMap['questionInstructionText'] = '"In this part, you have to answer several questions which related to your personal information. Before you answer these questions, make sure that you have read, understood and signed the <i>Participant Information Sheet</i>.</p><p>The following questions will collect your ANU ID, gender, age and college. If you feel that some of those details which you do not want to share with us, you can quit this experiment now.</p><p>Click \'start\' when you are ready."'
+    questionMap['questionInstructionText'] = '"In this section, you have to answer several questions which related to your personal information. Before you answer these questions, make sure that you have read, understood and signed the <i>Participant Information Sheet</i>.</p><p>The following questions will collect your ANU ID, gender, age and college. If you feel that some of those details which you do not want to share with us, you can quit this experiment now.</p><p>Click \'start\' when you are ready."';
+    questionMap['submitUrl']='"/sendquestionresult"';
+    questionMap['uid']='""';
     return render_question_page(request, questionMap);
 
 # @csrf_exempt
@@ -965,7 +1095,8 @@ def generate_iteration_images(request):
         # Check the iteration.
         iteration=int(iteration);
         if iteration==len(multiple_ui)-1:
-            return JsonResponse({"state":"complete"});
+            return JsonResponse({'state':"ok",
+                                 'url' : '/multiplequestion?uid='+uid});
         image_score_list=[];
         for i in range(0, 27):
             image_score_list.append(0);
@@ -1010,9 +1141,14 @@ def generate_iteration_images(request):
         else:
             exp_result = ExpResult(result=iteration_gene, title=gene_title);
             exp_result.save();
-        return JsonResponse({'state':'ok',
-                             'uid':uid,
-                             'iteration':iteration});
+        print(iteration);
+        # Check the iteration.
+        if iteration=="0":
+            return JsonResponse({'state' : 'ok',
+                                 'url' : '/initialtestquestion?uid='+uid});
+        else:
+            return JsonResponse({'state':'ok',
+                                 'url' : "/multiple?uid="+uid+"&iteration="+iteration});
     return start_question;
 
 # @csrf_exempt
@@ -1031,7 +1167,26 @@ def send_question_result(request):
         else:
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
-        return JsonResponse({'state':'ok', 'uid':uid});
+        return JsonResponse({'state':'ok', 'uid':uid, 'url':'/initialtest'});
+    return start_question;
+
+# @csrf_exempt
+def send_single_question_result(request):
+    # Check the result.
+    if(request.method=="POST"):
+        post_data=request.POST;
+        exp_result=post_data["exp_result"];
+        question_result=json.loads(exp_result);
+        uid=post_data["uid"];
+        title=uid+"|initial-question";
+        searchList=ExpResult.objects.filter(title=title);
+        if(len(searchList)!=0):
+            searchList[0].result=exp_result;
+            searchList[0].save();
+        else:
+            exp_result = ExpResult(result=exp_result, title=title);
+            exp_result.save();
+        return JsonResponse({'state':'ok', 'uid':uid, 'url':"/multiple?uid="+uid+"&iteration=0"});
     return start_question;
 
 # @csrf_exempt
@@ -1049,7 +1204,7 @@ def send_initial(request):
         else:
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
-        return JsonResponse({'state':'ok', 'uid':uid});
+        return JsonResponse({'state':'ok', 'uid':uid, 'url':'/initialtestquestion'});
     return start_single_choices(request);
 
 # @csrf_exempt

@@ -223,6 +223,16 @@
     </div>
     <div id="instruction-dimmer" class="ui page dimmer">
         <div class="content" id="instruction-dimmer-content">
+            <div id="instruction-content" class="center">
+                <h1 id="instruction-title"></h1>
+                <p id="instruction-text"></p>
+                <div class="ui animated black button" id="start-experiment" tabindex="0">
+                    <div class="visible content">Start</div>
+                    <div class="hidden content">
+                        <i class="right arrow icon"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div id="submit-dimmer" class="ui page dimmer">
@@ -249,6 +259,8 @@
     var testSingleIndex={{ testSingleIndex|safe }};
     var testUIIndex={{ testUIIndex|safe }};
     var testIteration={{ testIteration|safe }};
+    var testInstructionTitle={{ testInstructionTitle|safe }};
+    var testInstructionText={{ testInstructionText|safe }};
     var uid='{{ uid|safe }}';
     var imageGene={{ imageGene|safe }};
     </script>
