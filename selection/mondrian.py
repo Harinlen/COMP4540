@@ -7,8 +7,8 @@ from operator import attrgetter,itemgetter
 
 class imageGenerator:
     def generate_iteration(self, imageList, filename, imageScore):
-        imageList=self.Selection(imageList, imageScore)
-        print("imageList size:"+str(len(imageList)));
+        # imageList=self.Selection(imageList, imageScore)
+        # print("imageList size:"+str(len(imageList)));
         self.mutation(imageList)
         self.crossover(imageList)
         self.fixLong(imageList)
@@ -353,7 +353,7 @@ class imageGenerator:
         im.crop((4,4,w-4,h-4)).save(filename)
 
     def fixLong(self,imageList):
-        print("enter genotype to phenotype")
+        # print("enter genotype to phenotype")
         red = '#a0262e'
         yellow = '#ecd344'
         blue = '#30509b'
@@ -440,7 +440,7 @@ class imageGenerator:
         print(len(imageList))
 
     def crossover(self,imageList):
-        print("enter crossover")
+        # print("enter crossover")
         random.seed(int(time.time()));
         for image in imageList:
             random.shuffle(image)
@@ -503,7 +503,7 @@ class imageGenerator:
             i = i + 2
 
     def mutation(self,imageList):
-        print('enter mutation')
+        # print('enter mutation')
         mutationRate = 1
         random.seed(int(time.time()));
         for i in range(len(imageList)):
@@ -574,7 +574,7 @@ class imageGenerator:
                         imageList[i][cut]["color"] = mutcolor
 
     def Selection(self,imageList,imageScore):
-        print("enter selection")
+        # print("enter selection")
         random.seed(int(time.time()));
         shareValue = []
         randomNumber = []
@@ -596,13 +596,13 @@ class imageGenerator:
         for i in range(len(imageList)):
             randomNumber.append(random.random())
         randomNumber.sort()
-        print(randomNumber)
+        # print(randomNumber)
         i = 0
         j = 0
         while j < len(imageList):
             if (randomNumber[j] < cumShareValue[i]):
                 newImage.append(imageList[i])
-                print(i)
+                # print(i)
                 j = j + 1
                 i = 0
             else:

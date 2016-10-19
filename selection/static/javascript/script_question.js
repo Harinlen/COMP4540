@@ -200,9 +200,9 @@ function inputBoxNextCheck() {
 
 function radioNextCheck(event) {
     //Set the radio helper text.
-    var targetElement = event.target || event.srcElement;
+    var targetElement = event.target;
     //Get the attribute.
-    radioResultHelper=targetElement.getAttribute('value');
+    radioResultHelper=targetElement.innerHTML;
     //Enable the next button.
     var nextButton=document.getElementById('next-button');
     nextButton.classList.remove('disabled');
@@ -261,15 +261,15 @@ function prepareAndShowQuestion() {
         questionWidget="answer-radio-list";
         var candidateList=questionSetting["values"];
         var listArea=document.getElementById('answer-radio-list-area');
-        while(listArea.firstChild){
-            listArea.firstChild.removeEventListener('click', radioNextCheck, false);
-            listArea.removeChild(listArea.firstChild);
+        while(listArea.firstElementChild){
+            listArea.firstElementChild.firstElementChild.removeEventListener('click', radioNextCheck, false);
+            listArea.removeChild(listArea.firstElementChild);
         }
         for(var i=0; i<candidateList.length; ++i) {
             var candidateField=document.createElement('div');
             candidateField.classList.add('field');
-            candidateField.addEventListener('click', radioNextCheck, false);
             var candidateItem=document.createElement('div');
+            candidateItem.addEventListener('click', radioNextCheck, false);
             candidateItem.classList.add('ui');
             candidateItem.classList.add('radio');
             candidateItem.classList.add('checkbox');
