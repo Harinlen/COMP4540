@@ -48,7 +48,7 @@ def start_multiple_choices(request):
         return HttpResponseNotFound('<h1>Invalid Request</h1>');
 
     # Find last iteration gene information.
-    gene_title=uid+"|iteration"+str(iteration_num)+"-gene";
+    gene_title=uid+"|iteration-"+str(iteration_num)+"-gene";
     searchList=ExpResult.objects.filter(title=gene_title);
     if(len(searchList)==0):
         return HttpResponseNotFound('<h1>Invalid Request - No Gene Found</h1>');
@@ -1133,7 +1133,7 @@ def generate_iteration_images(request):
         last_gene=iteration_generator.generate_iteration(last_gene, imageFilename, image_score_list);
         iteration_gene=json.dumps(last_gene);
         # Save the last gene to a exp data.
-        gene_title=uid+"|iteration"+iteration+"-gene";
+        gene_title=uid+"|iteration-"+iteration+"-gene";
         searchList=ExpResult.objects.filter(title=gene_title);
         if(len(searchList)!=0):
             searchList[0].result=iteration_gene;
@@ -1149,7 +1149,7 @@ def generate_iteration_images(request):
         else:
             return JsonResponse({'state':'ok',
                                  'url' : "/multiple?uid="+uid+"&iteration="+iteration});
-    return start_question(request);
+    return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
 # @csrf_exempt
 def send_question_result(request):
@@ -1168,7 +1168,7 @@ def send_question_result(request):
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
         return JsonResponse({'state':'ok', 'uid':uid, 'url':'/initialtest'});
-    return start_question(request);
+    return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
 # @csrf_exempt
 def send_single_question_result(request):
@@ -1178,7 +1178,7 @@ def send_single_question_result(request):
         exp_result=post_data["exp_result"];
         question_result=json.loads(exp_result);
         uid=post_data["uid"];
-        title=uid+"|initial-question";
+        title=uid+"|single-question";
         searchList=ExpResult.objects.filter(title=title);
         if(len(searchList)!=0):
             searchList[0].result=exp_result;
@@ -1209,7 +1209,25 @@ def send_multiple_question_result(request):
                              'title':'Congratulations!',
                              'content':'You have done all the parts of the experiment. Thanks for you participation.',
                              'url':'about:blank'});
-    return start_question(request);
+    return JsonResponse({'state':'err', 'error':'Only support POST request'});
+
+def send_eyetribe(request):
+    # Check the request.
+    if(request.method=="POST"):
+        post_data=request.POST;
+        exp_result=post_data["eyetribe"];
+        uid=post_data["uid"];
+        iteration=post_data["iteration"];
+        title=uid+"|iteration-"+iteration+"-eyetribe";
+        searchList=ExpResult.objects.filter(title=title);
+        if(len(searchList)!=0):
+            searchList[0].result=exp_result;
+            searchList[0].save();
+        else:
+            exp_result = ExpResult(result=exp_result, title=title);
+            exp_result.save();
+        return JsonResponse({'state':'ok'});
+    return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
 # @csrf_exempt
 def send_initial(request):
@@ -1218,7 +1236,7 @@ def send_initial(request):
         post_data=request.POST;
         exp_result=post_data["exp_result"];
         uid=post_data["uid"];
-        title=uid+"|initial";
+        title=uid+"|iteration-initial";
         searchList=ExpResult.objects.filter(title=title);
         if(len(searchList)!=0):
             searchList[0].result=exp_result;
@@ -1227,7 +1245,7 @@ def send_initial(request):
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
         return JsonResponse({'state':'ok', 'uid':uid, 'url':'/initialtestquestion'});
-    return start_single_choices(request);
+    return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
 # @csrf_exempt
 def send_iteration(request):
@@ -1246,4 +1264,4 @@ def send_iteration(request):
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
         return JsonResponse({'state':'ok', 'uid':uid});
-    return start_multiple_choices(request);
+    return JsonResponse({'state':'err', 'error':'Only support POST request'});

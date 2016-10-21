@@ -29,10 +29,17 @@ var supportedWidgets=["rating-widget-boolean",
 var testIndex;
 var testDownloadedImages=[];
 var testResult=[];
+// EyeTribe tracking data.
+var testEyeTribe=[];
+var eyeTribeCache=[];
 var csrftoken;
 var uid;
 var startTime;
 var pressNextTime;
+
+function eyeTribeTrack(frame) {
+  eyeTribeCache.push(frame.dump());
+}
 
 function updateProgress() {
     var currentValue=$('#reading-count-down').progress('get value');
@@ -63,6 +70,8 @@ function updateProgress() {
                         $('#next-image').transition('fade down');
                         //Set the start time.
                         startTime=new Date();
+                        //Clear the eyetribe data.
+                        eyeTribeCache=[];
                     }
                 });
             }
@@ -129,21 +138,34 @@ function saveExpResult() {
                 uid: uid,
                 exp_result: JSON.stringify(testResult)},
         success: function(response) {
-            $('#submit-uploading').transition('hide');
-            $('#submit-generating').transition('show');
+            //Send the eyetribe data.
             $.ajax({
-                type: 'POST',
-                url: '/generateiteration',
-                dataType: 'json',
-                data : {csrfmiddlewaretoken: csrftoken,
-                        uid: uid,
-                        exp_result: JSON.stringify(testResult),
-                        image_gene: JSON.stringify(imageGene),
-                        iteration: -1},
-                success: function(response) {
-                        //Start the question.
-                        window.location.href=response['url'];
-                }
+              type: 'POST',
+              url: '/sendeyetribe',
+              dataType: 'json',
+              data : {csrfmiddlewaretoken: csrftoken,
+                uid: uid,
+                iteration: "initial",
+                eyetribe: JSON.stringify(testEyeTribe),
+              },
+              success: function(response) {
+                $('#submit-uploading').transition('hide');
+                $('#submit-generating').transition('show');
+                $.ajax({
+                    type: 'POST',
+                    url: '/generateiteration',
+                    dataType: 'json',
+                    data : {csrfmiddlewaretoken: csrftoken,
+                            uid: uid,
+                            exp_result: JSON.stringify(testResult),
+                            image_gene: JSON.stringify(imageGene),
+                            iteration: -1},
+                    success: function(response) {
+                            //Start the question.
+                            window.location.href=response['url'];
+                    }
+                });
+              }
             });
         },
         error: function(xhr, status, error) {
@@ -176,6 +198,8 @@ function onNextClick() {
     $('#next-image').transition({
         animation : 'fade up',
         onComplete : function() {
+            //Save the eyetribe data to list.
+            testEyeTribe.push(eyeTribeCache);
             //Prepare the score variables.
             var imageScore=0;
             //Check current index value.
@@ -357,7 +381,8 @@ function startUp() {
     //Initial switch button.
     var nextButton=document.getElementById("next-image");
     nextButton.addEventListener("click", onNextClick, false);
-
+    //Setup EyeTribe.
+    EyeTribe.loop(eyeTribeTrack);
     //Show the instruction dimmer.
     $('#start-loading').transition('hide');
     $('#instruction-dimmer').dimmer('show');

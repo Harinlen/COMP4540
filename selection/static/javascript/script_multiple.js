@@ -49,12 +49,20 @@ $('#multiple-kancolle').transition('hide');
 var submitImageList=[];
 var submitScoreWidgetList=[];
 var submitScoreList=[];
+var submitEyeTribe=[];
 var startTime;
 var secondStageTime;
 var submitTime;
 var stageOneTime;
 var stageTwoTime;
 var csrftoken;
+// EyeTribe tracking data.
+var cacheEyeTribe=[];
+function eyeTribeTrack(frame) {
+  cacheEyeTribe.push(frame.dump());
+}
+function blankListener(frame){
+}
 
 function createRatingWidget(ratingWidgetName) {
     var ratingWidget;
@@ -108,6 +116,10 @@ function getUtcTime(currentTime) {
 function submitData() {
     //Set the submit time.
     submitTime=new Date();
+    //Save the eye tribe data.
+    submitEyeTribe=cacheEyeTribe;
+    //Clear the loop pointer.
+    EyeTribe.loop(blankListener);
     //Calculate duration.
     timeStart=getUtcTime(startTime);
     timeSecond=getUtcTime(secondStageTime);
@@ -147,21 +159,34 @@ function submitData() {
                 iteration: testIteration,
                 exp_result: JSON.stringify(submitPackage)},
         success: function(response) {
-            $('#submit-uploading').transition('hide');
-            $('#submit-generating').transition('show');
+            //Submit the eyetribe data.
             $.ajax({
-                type: 'POST',
-                url: '/generateiteration',
-                dataType: 'json',
-                data : {
-                    csrfmiddlewaretoken: csrftoken,
-                    uid: uid,
-                    iteration: testIteration,
-                    image_gene: JSON.stringify(imageGene),
-                    exp_result: JSON.stringify(submitPackage)},
-                success: function(response) {
-                    window.location.href=response['url'];
-                }
+              type: 'POST',
+              url: '/sendeyetribe',
+              dataType: 'json',
+              data : {csrfmiddlewaretoken: csrftoken,
+                uid: uid,
+                iteration: testIteration,
+                eyetribe: JSON.stringify(submitEyeTribe),
+              },
+              success: function(response) {
+                $('#submit-uploading').transition('hide');
+                $('#submit-generating').transition('show');
+                $.ajax({
+                    type: 'POST',
+                    url: '/generateiteration',
+                    dataType: 'json',
+                    data : {
+                        csrfmiddlewaretoken: csrftoken,
+                        uid: uid,
+                        iteration: testIteration,
+                        image_gene: JSON.stringify(imageGene),
+                        exp_result: JSON.stringify(submitPackage)},
+                    success: function(response) {
+                        window.location.href=response['url'];
+                    }
+                });
+              }
             });
         }
     });
@@ -1111,6 +1136,8 @@ function startUITest() {
     }
     //Save the time.
     startTime=new Date();
+    //Setup EyeTribe.
+    EyeTribe.loop(eyeTribeTrack);
 }
 
 function onStartClick(){

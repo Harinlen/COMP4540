@@ -5,6 +5,7 @@ urlpatterns = [
         url(r'^$', views.start_question, name='start_question'),
         url(r'^sendquestionresult$', views.send_question_result, name='send_question_result'),
         url(r'^sendsinglequestionresult$', views.send_single_question_result, name='send_single_question_result'),
+        url(r'^sendeyetribe$', views.send_eyetribe, name='send_eyetribe'),
         url(r'^sendmultiplequestionresult$', views.send_multiple_question_result, name='send_multiple_question_result'),
         url(r'^initialtestquestion$', views.start_single_question, name='start_single_question'),
         url(r'^initialtest$', views.start_initial_test, name='start_initial_test'),
