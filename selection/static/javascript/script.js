@@ -31,14 +31,36 @@ var testDownloadedImages=[];
 var testResult=[];
 // EyeTribe tracking data.
 var testEyeTribe=[];
+var mouseCache=[];
 var eyeTribeCache=[];
+var currentX=-1;
+var currentY=-1;
 var csrftoken;
 var uid;
 var startTime;
 var pressNextTime;
 
 function eyeTribeTrack(frame) {
-  eyeTribeCache.push(frame.dump());
+    eyeTribeCache.push(frame.dump());
+    mouseCache.push([currentX, currentY]);
+}
+function blankListener(frame){
+}
+
+function mouseCoords(ev)
+{
+  if(ev.pageX || ev.pageY){
+    return {x:ev.pageX, y:ev.pageY};
+  }
+  return{
+    x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+    y:ev.clientY + document.body.scrollTop - document.body.clientTop
+  };
+}
+function onDocumentMouseMove(ev) {
+    var mousePos = mouseCoords(ev);
+    currentX = mousePos.x;
+    currentY = mousePos.y;
 }
 
 function updateProgress() {
@@ -72,6 +94,7 @@ function updateProgress() {
                         startTime=new Date();
                         //Clear the eyetribe data.
                         eyeTribeCache=[];
+                        mouseCache=[];
                     }
                 });
             }
@@ -129,6 +152,9 @@ function enabledNext() {
 var globalTries=3;
 
 function saveExpResult() {
+    //Clear the loop pointer.
+    EyeTribe.loop(blankListener);
+    //Start to get CSRF Token.
     csrftoken = Cookies.get('csrftoken');
     $.ajax({
         type: 'POST',
@@ -184,6 +210,7 @@ function getUtcTime(currentTime) {
 }
 
 function onNextClick() {
+
     //Save the click time.
     pressNextTime=new Date();
     //Check the current value is valid or not.
@@ -198,8 +225,15 @@ function onNextClick() {
     $('#next-image').transition({
         animation : 'fade up',
         onComplete : function() {
+            //Clear the loop pointer.
+            EyeTribe.loop(blankListener);
             //Save the eyetribe data to list.
-            testEyeTribe.push(eyeTribeCache);
+            var eyeTribeData={};
+            eyeTribeData['eyetribe']=eyeTribeCache;
+            eyeTribeData['mouse']=mouseCache;
+            testEyeTribe.push(eyeTribeData);
+            //Set the data callback.
+            EyeTribe.loop(eyeTribeTrack);
             //Prepare the score variables.
             var imageScore=0;
             //Check current index value.
@@ -386,6 +420,8 @@ function startUp() {
     //Show the instruction dimmer.
     $('#start-loading').transition('hide');
     $('#instruction-dimmer').dimmer('show');
+
+    document.onmousemove=onDocumentMouseMove;
 }
 
 $(document)

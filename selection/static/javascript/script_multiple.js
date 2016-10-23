@@ -49,17 +49,36 @@ $('#multiple-kancolle').transition('hide');
 var submitImageList=[];
 var submitScoreWidgetList=[];
 var submitScoreList=[];
-var submitEyeTribe=[];
+var submitEyeTribe={};
 var startTime;
 var secondStageTime;
 var submitTime;
 var stageOneTime;
 var stageTwoTime;
 var csrftoken;
+var currentX=-1;
+var currentY=-1;
 // EyeTribe tracking data.
 var cacheEyeTribe=[];
+var mouseCache=[];
+function mouseCoords(ev)
+{
+  if(ev.pageX || ev.pageY){
+    return {x:ev.pageX, y:ev.pageY};
+  }
+  return{
+    x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+    y:ev.clientY + document.body.scrollTop - document.body.clientTop
+  };
+}
+function onDocumentMouseMove(ev) {
+    var mousePos = mouseCoords(ev);
+    currentX = mousePos.x;
+    currentY = mousePos.y;
+}
 function eyeTribeTrack(frame) {
   cacheEyeTribe.push(frame.dump());
+  mouseCache.push([currentX, currentY]);
 }
 function blankListener(frame){
 }
@@ -116,10 +135,11 @@ function getUtcTime(currentTime) {
 function submitData() {
     //Set the submit time.
     submitTime=new Date();
-    //Save the eye tribe data.
-    submitEyeTribe=cacheEyeTribe;
     //Clear the loop pointer.
     EyeTribe.loop(blankListener);
+    //Save the eye tribe data.
+    submitEyeTribe['eyetribe']=cacheEyeTribe;
+    submitEyeTribe['mouse']=mouseCache;
     //Calculate duration.
     timeStart=getUtcTime(startTime);
     timeSecond=getUtcTime(secondStageTime);
