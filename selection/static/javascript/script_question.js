@@ -213,11 +213,13 @@ function prepareAndShowQuestion() {
     //Prepare the current question.
     questionType=questionTypes[questionIndex];
     questionText=questionTexts[questionIndex];
+    questionImage=questionImages[questionIndex];
     questionExplain=questionExplains[questionIndex];
     questionSetting=questionSettings[questionIndex];
     //Set the content of the widget.
     document.getElementById('question-text').innerHTML=questionText;
     document.getElementById('question-explain').innerHTML=questionExplain;
+    document.getElementById('question-images').setAttribute('src', questionImage);
     //Set the question widget.
     if(questionType==0) {
         //Set the question widget.

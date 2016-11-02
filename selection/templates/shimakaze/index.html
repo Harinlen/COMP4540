@@ -24,6 +24,9 @@
             <div class="row">
                 <p id="question-explain"></p>
             </div>
+            <div id="question-images-row" class="row">
+                <img id="question-images" src="" />
+            </div>
         </div>
         <div class="content-filler"></div>
         <div id="answer-area" class="ui grid row centered">
@@ -121,6 +124,7 @@
     var questionTypes={{ questionTypes|safe }};
     var questionTexts={{ questionTexts|safe }};
     var questionExplains={{ questionExplains|safe }};
+    var questionImages={{ questionImages|safe }};
     var questionSettings={{ questionSettings|safe }};
     var uid={{ uid|safe }};
     var submitUrl={{ submitUrl|safe }};
