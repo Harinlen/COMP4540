@@ -16,6 +16,8 @@ single_choice_codename = 'akatsuki'
 multiple_choice_codename = 'musashi'
 question_codename = 'shimakaze'
 
+experiment_row = 0
+
 class Question_Type(Enum):
     Combo = 0;
     Text = 1;
@@ -28,6 +30,33 @@ class Question_Type(Enum):
 multiple_ui    =[0, 0, 1, 1, 2, 2, 3, 3];
 multiple_single=[0, 1, 0, 1, 0 ,1, 0, 1];
 
+multiple_order=[[0, 6, 7, 1, 5, 3, 4, 2],
+                [5, 7, 6, 2, 1, 0, 3, 4],
+                [3, 4, 5, 6, 0, 2, 1, 7],
+                [4, 3, 0, 5, 2, 6, 7, 1],
+                [1, 0, 3, 7, 4, 5, 2, 6],
+                [7, 5, 2, 4, 3, 1, 6, 0],
+                [2, 1, 4, 0, 6, 7, 5, 3],
+                [6, 2, 1, 3, 7, 4, 0, 5],
+
+                [0, 7, 1, 5, 4, 2, 3, 6],
+                [3, 0, 5, 1, 7, 6, 4, 2],
+                [5, 1, 2, 0, 3, 7, 6, 4],
+                [4, 5, 3, 7, 6, 1, 2, 0],
+                [2, 6, 0, 3, 5, 4, 7, 1],
+                [6, 4, 7, 2, 0, 3, 1, 5],
+                [1, 3, 4, 6, 2, 5, 0, 7],
+                [7, 2, 6, 4, 1, 0, 5, 3],
+
+                [7, 3, 6, 0, 2, 5, 4, 1],
+                [2, 7, 1, 3, 6, 0, 5, 4],
+                [4, 6, 7, 2, 5, 1, 0, 3],
+                [5, 2, 0, 4, 3, 7, 1, 6],
+                [1, 5, 2, 7, 4, 6, 3, 0],
+                [6, 0, 3, 5, 1, 4, 7, 2],
+                [3, 4, 5, 1, 0, 2, 6, 7],
+                [0, 1, 4, 6, 7, 3, 2, 5]];
+
 # @csrf_exempt
 def render_question_page(request, questionMap):
     return render(request, question_codename + '/index.html',
@@ -36,6 +65,12 @@ def render_question_page(request, questionMap):
 # @csrf_exempt
 def start_multiple_choices(request):
     uid=request.GET.get('uid');
+    currentRow=-2;
+    if 'row' in request.GET.keys():
+        currentRow=int(request.GET['row']);
+    if(currentRow==-2):
+        return JsonResponse({'state':"err",
+                             'error' : 'no row provided'});
     if uid==None:
         return HttpResponseNotFound('<h1>Invalid Request</h1>');
     iteration_num=request.GET.get('iteration');
@@ -49,22 +84,33 @@ def start_multiple_choices(request):
 
     # Find last iteration gene information.
     gene_title=uid+"|iteration-"+str(iteration_num)+"-gene";
+    if(currentRow!=-1):
+        gene_title=gene_title+"-row-"+str(currentRow)
     searchList=ExpResult.objects.filter(title=gene_title);
     if(len(searchList)==0):
         return HttpResponseNotFound('<h1>Invalid Request - No Gene Found</h1>');
     gene_title=searchList[0].result;
     # Load the gene as json.
     iterationImageGene=json.loads(gene_title);
-
     singleIndex=request.GET.get('single');
-    if singleIndex==None:
+    # Get the target index.
+    wanted_index=-1;
+    if currentRow!=-1:
+        wanted_index=multiple_order[currentRow][iteration_num];
+    print("want index:");
+    print(wanted_index);
+    if wanted_index!=-1:
+        singleIndex=multiple_single[wanted_index];
+    elif singleIndex==None:
         singleIndex=multiple_single[iteration_num];
     else:
         singleIndex=int(singleIndex);
         if singleIndex>1:
             singleIndex=0;
     uiIndex=request.GET.get('ui');
-    if uiIndex==None:
+    if wanted_index!=-1:
+        uiIndex=multiple_ui[wanted_index];
+    elif uiIndex==None:
         uiIndex=multiple_ui[iteration_num];
     else:
         uiIndex=int(uiIndex);
@@ -87,6 +133,7 @@ def start_multiple_choices(request):
                          'uid':uid,
                          'progressValue':iteration_num,
                          'progressTotal':len(multiple_ui),
+                         'currentRow':currentRow,
                          'imageGene':iterationImageGene};
     # Check iteration.
     if iteration_num==0:
@@ -105,6 +152,13 @@ def start_initial_test(request):
         return HttpResponseNotFound('<h1>Invalid Request</h1>');
     # Set the randomize seed.
     random.seed(int(time.time()));
+    # Check the row key is in the dic or not.
+    currentRow=-2;
+    if 'row' in request.GET.keys():
+        currentRow=int(request.GET['row']);
+    if(currentRow==-2):
+        return JsonResponse({'state':"err",
+                             'error' : 'no row provided'});
     # Generate the UI gene list.
     # Initial static 27 images genes.
     single_ui_image_raw_gene = [
@@ -489,10 +543,11 @@ def start_initial_test(request):
                    'testHintText': single_ui_hint,
                    'testLabel': single_ui_label,
                    'testRadioMaximum': 7,
+                   'currentRow': currentRow,
                    'testInstructionTitle': '"Part 2 - Single Image Response UI Experiment"',
                    'testInstructionText': '"In the following section, you have to rate ' + str(len(single_ui_list)) + ' Mondrian\'s Neo-Plasticism style paintings. You have to score each image as how much you like it, but not how much artistic value it has.</p><p>In the experiment, you will use buttons, stars and sliders to score the paintings.</p><p>Click \'start\' when you are ready."',
                    'imageGene' : single_ui_image_gene,
-                   'submitUrl' : '"/saveinitial"'});
+                   'submitUrl' : '"/saveinitial?row='+str(currentRow)+'"'});
 
 def add_question(questionMap, questionType, questionText, questionExplain, questionSetting):
     questionMap['questionTypes'].append(questionType.value);
@@ -509,6 +564,13 @@ def generate_empty_question_map():
 def start_multiple_question(request):
     # Get the uid.
     uid=request.GET.get('uid');
+    # Check the row key is in the dic or not.
+    currentRow=-2;
+    if 'row' in request.GET.keys():
+        currentRow=int(request.GET['row']);
+    if(currentRow==-2):
+        return JsonResponse({'state':"err",
+                             'error' : 'no row provided'});
     # Generate the question.
     questionMap=generate_empty_question_map();
     # Generate the UI list.
@@ -590,12 +652,20 @@ def start_multiple_question(request):
     questionMap['questionInstructionText'] = '"This is the last part of the experiment. In this part, you have to answer several questions which related to the multiple images selection UI experiment section. These questions are important to the experiment and it will affect the result of the experiment. So please answer these questions seriously.</p><p>Click \'start\' when you are ready."';
     questionMap['submitUrl']='"/sendmultiplequestionresult"';
     questionMap['uid']='"'+uid+'"';
+    questionMap['currentRow']=currentRow;
     # Start to rendering the data.
     return render_question_page(request, questionMap);
 
 def start_single_question(request):
     # Get the uid.
     uid=request.GET.get('uid');
+    # Check the row key is in the dic or not.
+    currentRow=-2;
+    if 'row' in request.GET.keys():
+        currentRow=int(request.GET['row']);
+    if(currentRow==-2):
+        return JsonResponse({'state':"err",
+                             'error' : 'no row provided'});
     # Generate the question.
     questionMap=generate_empty_question_map();
     # Generate the UI list.
@@ -636,11 +706,11 @@ def start_single_question(request):
     questionMap['questionInstructionText'] = '"In this part, you have to answer several questions which related to the single image response UI experiment section. These questions are important to the experiment and it will affect the result of the experiment. So please answer these questions seriously.</p><p>Click \'start\' when you are ready."';
     questionMap['submitUrl']='"/sendsinglequestionresult"';
     questionMap['uid']='"'+uid+'"';
+    questionMap['currentRow']=currentRow;
     # Start to rendering the data.
     return render_question_page(request, questionMap);
 
-# @csrf_exempt
-def start_question(request):
+def generate_basic_question():
     questionMap={'questionTypes': [],
                  'questionTexts': [],
                  'questionExplains': [],
@@ -1081,6 +1151,18 @@ def start_question(request):
     questionMap['questionInstructionText'] = '"In this section, you have to answer several questions which related to your personal information. Before you answer these questions, make sure that you have read, understood and signed the <i>Participant Information Sheet</i>.</p><p>The following questions will collect your ANU ID, gender, age and college. If you feel that some of those details which you do not want to share with us, you can quit this experiment now.</p><p>Click \'start\' when you are ready."';
     questionMap['submitUrl']='"/sendquestionresult"';
     questionMap['uid']='""';
+    return questionMap;
+
+# @csrf_exempt
+def start_experiment(request):
+    questionMap=generate_basic_question();
+    questionMap['currentRow']=experiment_row;
+    return render_question_page(request, questionMap);
+
+# @csrf_exempt
+def start_question(request):
+    questionMap=generate_basic_question();
+    questionMap['currentRow']=-1;
     return render_question_page(request, questionMap);
 
 # @csrf_exempt
@@ -1092,11 +1174,13 @@ def generate_iteration_images(request):
         last_result=json.loads(exp_result);
         uid=post_data["uid"];
         iteration=post_data["iteration"];
+        # Get current row.
+        currentRow=int(post_data['row']);
         # Check the iteration.
         iteration=int(iteration);
         if iteration==len(multiple_ui)-1:
             return JsonResponse({'state':"ok",
-                                 'url' : '/multiplequestion?uid='+uid});
+                                 'url' : '/multiplequestion?uid='+uid+'&row='+str(currentRow)});
         image_score_list=[];
         for i in range(0, 27):
             image_score_list.append(0);
@@ -1134,6 +1218,8 @@ def generate_iteration_images(request):
         iteration_gene=json.dumps(last_gene);
         # Save the last gene to a exp data.
         gene_title=uid+"|iteration-"+iteration+"-gene";
+        if(currentRow!=-1):
+            gene_title=gene_title+"-row-"+str(currentRow)
         searchList=ExpResult.objects.filter(title=gene_title);
         if(len(searchList)!=0):
             searchList[0].result=iteration_gene;
@@ -1145,10 +1231,10 @@ def generate_iteration_images(request):
         # Check the iteration.
         if iteration=="0":
             return JsonResponse({'state' : 'ok',
-                                 'url' : '/initialtestquestion?uid='+uid});
+                                 'url' : '/initialtestquestion?uid='+uid+'&row='+str(currentRow)});
         else:
             return JsonResponse({'state':'ok',
-                                 'url' : "/multiple?uid="+uid+"&iteration="+iteration});
+                                 'url' : "/multiple?uid="+uid+"&iteration="+iteration+"&row="+str(currentRow)});
     return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
 # @csrf_exempt
@@ -1160,6 +1246,9 @@ def send_question_result(request):
         question_result=json.loads(exp_result);
         uid=question_result[0];
         title=uid+"|info";
+        currentRow=int(post_data['row']);
+        if(currentRow!=-1):
+            title=title+"-row-"+str(currentRow)
         searchList=ExpResult.objects.filter(title=title);
         if(len(searchList)!=0):
             searchList[0].result=exp_result;
@@ -1167,7 +1256,7 @@ def send_question_result(request):
         else:
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
-        return JsonResponse({'state':'ok', 'uid':uid, 'url':'/initialtest'});
+        return JsonResponse({'state':'ok', 'uid':uid, 'url':'/initialtest?row='+str(currentRow)});
     return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
 # @csrf_exempt
@@ -1179,6 +1268,9 @@ def send_single_question_result(request):
         question_result=json.loads(exp_result);
         uid=post_data["uid"];
         title=uid+"|single-question";
+        currentRow=int(post_data['row']);
+        if(currentRow!=-1):
+            title=title+"-row-"+str(currentRow)
         searchList=ExpResult.objects.filter(title=title);
         if(len(searchList)!=0):
             searchList[0].result=exp_result;
@@ -1186,7 +1278,7 @@ def send_single_question_result(request):
         else:
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
-        return JsonResponse({'state':'ok', 'uid':uid, 'url':"/multiple?uid="+uid+"&iteration=0"});
+        return JsonResponse({'state':'ok', 'uid':uid, 'url':"/multiple?uid="+uid+"&iteration=0&row="+str(currentRow)});
     return start_question(request);
 
 # @csrf_exempt
@@ -1198,6 +1290,9 @@ def send_multiple_question_result(request):
         question_result=json.loads(exp_result);
         uid=post_data["uid"];
         title=uid+"|multiple-question";
+        currentRow=int(post_data['row']);
+        if(currentRow!=-1):
+            title=title+"-row-"+str(currentRow)
         searchList=ExpResult.objects.filter(title=title);
         if(len(searchList)!=0):
             searchList[0].result=exp_result;
@@ -1205,10 +1300,16 @@ def send_multiple_question_result(request):
         else:
             exp_result = ExpResult(result=exp_result, title=title);
             exp_result.save();
-        return JsonResponse({'state':'finished',
-                             'title':'Congratulations!',
-                             'content':'You have done all the parts of the experiment. Thanks for you participation.',
-                             'url':'about:blank'});
+        response_json={'state':'finished',
+                       'title':'Congratulations!',
+                       'content':'You have done all the parts of the experiment. Thanks for you participation.'};
+        if currentRow!=-1:
+            global experiment_row;
+            experiment_row=currentRow+1;
+            response_json['url']='\startexperiment';
+        else:
+            response_json['url']="\\";
+        return JsonResponse(response_json);
     return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
 def send_eyetribe(request):
@@ -1219,6 +1320,9 @@ def send_eyetribe(request):
         uid=post_data["uid"];
         iteration=post_data["iteration"];
         title=uid+"|iteration-"+iteration+"-eyetribe";
+        currentRow=int(post_data['row']);
+        if(currentRow!=-1):
+            title=title+"-row-"+str(currentRow)
         searchList=ExpResult.objects.filter(title=title);
         if(len(searchList)!=0):
             searchList[0].result=exp_result;
@@ -1237,6 +1341,9 @@ def send_initial(request):
         exp_result=post_data["exp_result"];
         uid=post_data["uid"];
         title=uid+"|iteration-initial";
+        currentRow=int(post_data['row']);
+        if(currentRow!=-1):
+            title=title+"-row-"+str(currentRow)
         searchList=ExpResult.objects.filter(title=title);
         if(len(searchList)!=0):
             searchList[0].result=exp_result;
@@ -1256,6 +1363,9 @@ def send_iteration(request):
         uid=post_data["uid"];
         iteration=post_data["iteration"];
         title=uid+"|iteration-"+iteration;
+        currentRow=int(post_data['row']);
+        if(currentRow!=-1):
+            title=title+"-row-"+str(currentRow)
         searchList=ExpResult.objects.filter(title=title);
         if(len(searchList)!=0):
             searchList[0].result=exp_result;

@@ -161,6 +161,7 @@ function saveExpResult() {
         url: submitUrl,
         dataType: 'json',
         data : {csrfmiddlewaretoken: csrftoken,
+                row: currentRow,
                 uid: uid,
                 exp_result: JSON.stringify(testResult)},
         success: function(response) {
@@ -171,6 +172,7 @@ function saveExpResult() {
               dataType: 'json',
               data : {csrfmiddlewaretoken: csrftoken,
                 uid: uid,
+                row: currentRow,
                 iteration: "initial",
                 eyetribe: JSON.stringify(testEyeTribe),
               },
@@ -180,9 +182,11 @@ function saveExpResult() {
                 $.ajax({
                     type: 'POST',
                     url: '/generateiteration',
+                    row: currentRow,
                     dataType: 'json',
                     data : {csrfmiddlewaretoken: csrftoken,
                             uid: uid,
+                            row: currentRow,
                             exp_result: JSON.stringify(testResult),
                             image_gene: JSON.stringify(imageGene),
                             iteration: -1},

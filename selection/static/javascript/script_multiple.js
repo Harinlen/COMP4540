@@ -176,6 +176,7 @@ function submitData() {
         dataType: 'json',
         data : {csrfmiddlewaretoken: csrftoken,
                 uid: uid,
+                row: currentRow,
                 iteration: testIteration,
                 exp_result: JSON.stringify(submitPackage)},
         success: function(response) {
@@ -186,6 +187,7 @@ function submitData() {
               dataType: 'json',
               data : {csrfmiddlewaretoken: csrftoken,
                 uid: uid,
+                row: currentRow,
                 iteration: testIteration,
                 eyetribe: JSON.stringify(submitEyeTribe),
               },
@@ -199,6 +201,7 @@ function submitData() {
                     data : {
                         csrfmiddlewaretoken: csrftoken,
                         uid: uid,
+                        row: currentRow,
                         iteration: testIteration,
                         image_gene: JSON.stringify(imageGene),
                         exp_result: JSON.stringify(submitPackage)},

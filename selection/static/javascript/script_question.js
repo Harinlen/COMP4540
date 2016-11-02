@@ -83,6 +83,7 @@ function saveExpResult() {
         dataType: 'json',
         data : {csrfmiddlewaretoken: csrftoken,
                 uid: uid,
+                row: currentRow,
                 exp_result: JSON.stringify(answerData)},
         success: function(response) {
             //Check response data.
