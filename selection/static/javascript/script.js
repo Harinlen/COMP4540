@@ -2,7 +2,7 @@
 $.fn.dimmer.settings.closable=false;
 //Initial rating widget.
 $('#rating-widget-integer').rating();
-$('#reading-count-down').progress();
+$('#reading-count-down').progress({showActivity: false});
 $('#experiment-progress').progress({showActivity: false});
 $('#rating-widget-integer-radio')
 .form({
@@ -30,7 +30,6 @@ var testIndex;
 var testDownloadedImages=[];
 var testResult=[];
 // EyeTribe tracking data.
-var testEyeTribe=[];
 var mouseCache=[];
 var eyeTribeCache=[];
 var currentX=-1;
@@ -41,9 +40,14 @@ var startTime;
 var pressNextTime;
 
 function eyeTribeTrack(frame) {
-    eyeTribeCache.push(frame.dump());
+    frameData=JSON.parse(frame.dump());
+    delete frameData.state;
+    delete frameData.timestamp;
+    delete frameData.time;
+    eyeTribeCache.push(JSON.stringify(frameData));
     mouseCache.push([currentX, currentY]);
 }
+
 function blankListener(frame){
 }
 
@@ -165,18 +169,6 @@ function saveExpResult() {
                 uid: uid,
                 exp_result: JSON.stringify(testResult)},
         success: function(response) {
-            //Send the eyetribe data.
-            $.ajax({
-              type: 'POST',
-              url: '/sendeyetribe',
-              dataType: 'json',
-              data : {csrfmiddlewaretoken: csrftoken,
-                uid: uid,
-                row: currentRow,
-                iteration: "initial",
-                eyetribe: JSON.stringify(testEyeTribe),
-              },
-              success: function(response) {
                 $('#submit-uploading').transition('hide');
                 $('#submit-generating').transition('show');
                 $.ajax({
@@ -195,9 +187,7 @@ function saveExpResult() {
                             window.location.href=response['url'];
                     }
                 });
-              }
-            });
-        },
+              },
         error: function(xhr, status, error) {
             if(globalTries>0) {
                 globalTries = globalTries - 1;
@@ -235,9 +225,19 @@ function onNextClick() {
             var eyeTribeData={};
             eyeTribeData['eyetribe']=eyeTribeCache;
             eyeTribeData['mouse']=mouseCache;
-            testEyeTribe.push(eyeTribeData);
-            //Set the data callback.
-            EyeTribe.loop(eyeTribeTrack);
+            //Submit the eyetribe data immedately.
+            //Send the eyetribe data.
+            $.ajax({
+              type: 'POST',
+              url: '/sendeyetribe',
+              dataType: 'json',
+              data : {csrfmiddlewaretoken: csrftoken,
+                uid: uid,
+                row: currentRow,
+                iteration: "initial-"+testIndex.toString(),
+                eyetribe: JSON.stringify(eyeTribeData),
+              }
+            });
             //Prepare the score variables.
             var imageScore=0;
             //Check current index value.
@@ -309,6 +309,8 @@ function onNextClick() {
 
 function startNewIteration() {
     //Reset the widget.
+    //Setup EyeTribe.
+    EyeTribe.loop(eyeTribeTrack);
     //  Boolean button.
     document.getElementById("rating-widget-boolean").classList.remove("active");
     //  Boolean button group.
@@ -327,7 +329,8 @@ function startNewIteration() {
     $('#obvserve-item').transition({
         animation : 'fade down',
         onComplete : function() {
-            window.setTimeout(updateProgress, 1000);
+            // CHANGE!
+            window.setTimeout(updateProgress, 1);
         }
     });
 }
@@ -419,8 +422,6 @@ function startUp() {
     //Initial switch button.
     var nextButton=document.getElementById("next-image");
     nextButton.addEventListener("click", onNextClick, false);
-    //Setup EyeTribe.
-    EyeTribe.loop(eyeTribeTrack);
     //Show the instruction dimmer.
     $('#start-loading').transition('hide');
     $('#instruction-dimmer').dimmer('show');

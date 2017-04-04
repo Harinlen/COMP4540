@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
         url(r'^$', views.start_question, name='start_question'),
+        url(r'^dump$', views.dump_result, name='dump_result'),
+        url(r'^dumptitle$', views.dump_title, name='dump_title'),
         url(r'^startexperiment$', views.start_experiment, name='start_experiment'),
         url(r'^sendquestionresult$', views.send_question_result, name='send_question_result'),
         url(r'^sendsinglequestionresult$', views.send_single_question_result, name='send_single_question_result'),

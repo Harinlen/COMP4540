@@ -15,6 +15,7 @@ import hashlib
 single_choice_codename = 'akatsuki'
 multiple_choice_codename = 'musashi'
 question_codename = 'shimakaze'
+dump_codename = 'akashi'
 
 experiment_row = 0
 
@@ -61,6 +62,31 @@ multiple_order=[[0, 6, 7, 1, 5, 3, 4, 2],
 def render_question_page(request, questionMap):
     return render(request, question_codename + '/index.html',
                   questionMap);
+
+@csrf_exempt
+def dump_title(request):
+    dumpData=""
+    dump_list=ExpResult.objects.all();
+    for item in dump_list:
+        dumpData+=(item.title+"\n")
+    pageData={'dumpinfo':dumpData}
+    # Check the request.
+    if(request.method=="GET"):
+        return render(request, dump_codename + '/index.html',
+                      pageData);
+
+@csrf_exempt
+def dump_result(request):
+    dump_title=request.GET.get('title');
+    dumpData=""
+    searchList=ExpResult.objects.filter(title=dump_title);
+    if(len(searchList)!=0):
+        dumpData+=searchList[0].result;
+    pageData={'dumpinfo':dumpData}
+    # Check the request.
+    if(request.method=="GET"):
+        return render(request, dump_codename + '/index.html',
+                      pageData);
 
 # @csrf_exempt
 def start_multiple_choices(request):
@@ -761,7 +787,7 @@ def generate_basic_question():
     add_question(questionMap,
                  Question_Type.SearchCombo,
                  "Which program are you in now?",
-                 "Please select the program you are studying now. If none of them matches you, please select 'Other'.",
+                 "Please select the program you are studying now. If none of them matches you, please select 'Other'.</p><p>You can type several beginning letters to search. For example, if you are a master student, you can type 'Master of' to search all master colleges.",
                  "",
                  {"defaultText":"Your ANU program",
                   "values": [["ANU Express", "0"],
@@ -1171,7 +1197,7 @@ def generate_basic_question():
                  {"values": ["Yes", "No"]});
 
     questionMap["questionInstructionTitle"]='\"Part 1 - Basic Questions\"';
-    questionMap['questionInstructionText'] = '"In this section, you have to answer several questions which related to your personal information. Before you answer these questions, make sure that you have read, understood and signed the <i>Participant Information Sheet</i>.</p><p>The following questions will collect your ANU ID, gender, age and college. If you feel that some of those details which you do not want to share with us, you can quit this experiment now.</p><p>Click \'start\' when you are ready."';
+    questionMap['questionInstructionText'] = '"In this section, you have to answer several questions which related to your personal information. Before you answer these questions, make sure that you have read, understood and signed the <i>Participant Information Sheet</i>. The following questions will collect your ANU ID, gender, age and college. </p><p>Click \'start\' when you are ready."';
     questionMap['submitUrl']='"/sendquestionresult"';
     questionMap['uid']='""';
     return questionMap;
@@ -1179,6 +1205,10 @@ def generate_basic_question():
 # @csrf_exempt
 def start_experiment(request):
     questionMap=generate_basic_question();
+    specific_row=request.GET.get('row')
+    global experiment_row
+    if not specific_row is None:
+        experiment_row=specific_row
     questionMap['currentRow']=experiment_row;
     return render_question_page(request, questionMap);
 
@@ -1231,8 +1261,9 @@ def generate_iteration_images(request):
         imageFilename=[];
         iteration_image_list=[];
         for i in range(0, 27):
-            imagePath="static/hash_images/"+uid+"-i"+iteration+"-"+str(i)+".png";
+            imagePath="static\\hash_images\\"+uid+"-i"+iteration+"-"+str(i)+".png";
             iteration_image_list.append(imagePath);
+            print(os.path.join(BASE, imagePath))
             imageFilename.append(os.path.join(BASE, imagePath));
         # Generate the image.
         last_gene=json.loads(post_data["image_gene"]);
@@ -1335,6 +1366,7 @@ def send_multiple_question_result(request):
         return JsonResponse(response_json);
     return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
+@csrf_exempt
 def send_eyetribe(request):
     # Check the request.
     if(request.method=="POST"):
@@ -1356,7 +1388,7 @@ def send_eyetribe(request):
         return JsonResponse({'state':'ok'});
     return JsonResponse({'state':'err', 'error':'Only support POST request'});
 
-# @csrf_exempt
+@csrf_exempt
 def send_initial(request):
     # Check the result.
     if(request.method=="POST"):

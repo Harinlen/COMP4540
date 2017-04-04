@@ -77,8 +77,12 @@ function onDocumentMouseMove(ev) {
     currentY = mousePos.y;
 }
 function eyeTribeTrack(frame) {
-  cacheEyeTribe.push(frame.dump());
-  mouseCache.push([currentX, currentY]);
+    frameData=JSON.parse(frame.dump());
+    delete frameData.state;
+    delete frameData.timestamp;
+    delete frameData.time;
+    cacheEyeTribe.push(JSON.stringify(frameData));
+    mouseCache.push([currentX, currentY]);
 }
 function blankListener(frame){
 }

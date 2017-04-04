@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>Eye Tribe Frame Dumper</title>
+<script src="http://localhost:6556/eyetribe.js"></script>
+
+<div id="message">
+  <p><b>Press spacebar to pause.</b></p>
+</div>
+<div id="dump"></div>
+
+<script>
+(function() {
+  var dump = document.getElementById('dump');
+
+  EyeTribe.loop(function(frame) {
+    if (paused) return;
+    console.log(this, frame);
+    dump.innerHTML = frame.dump();
+  })
+  .on('connect', function() {
+    console.log('connected:');
+  })
+  .on('disconnect', function(code, reason) {
+    console.log('disconnected:', code, reason);
+  })
+
+
+  var paused = false;
+
+  window.onkeypress = function(e) {
+    console.log(e);
+    if (e.charCode == 32) { // spacebar
+      paused ^= true;
+    }
+  };
+})();
+</script>
