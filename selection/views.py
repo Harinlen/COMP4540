@@ -575,19 +575,21 @@ def start_initial_test(request):
                    'imageGene' : single_ui_image_gene,
                    'submitUrl' : '"/saveinitial?row='+str(currentRow)+'"'});
 
-def add_question(questionMap, questionType, questionText, questionExplain, questionImage, questionSetting):
+def add_question(questionMap, questionType, questionText, questionExplain, questionImage, questionSetting, showPreviousAnswer):
     questionMap['questionTypes'].append(questionType.value);
     questionMap['questionTexts'].append(questionText);
     questionMap['questionImages'].append(questionImage);
     questionMap['questionExplains'].append(questionExplain);
     questionMap['questionSettings'].append(questionSetting);
+    questionMap['showPreviousAnswers'].append(showPreviousAnswer);
 
 def generate_empty_question_map():
     return {'questionTypes': [],
             'questionTexts': [],
             'questionImages': [],
             'questionExplains': [],
-            'questionSettings': []};
+            'questionSettings': [],
+            'showPreviousAnswers': []};
 
 def start_multiple_question(request):
     # Get the uid.
@@ -610,70 +612,81 @@ def start_multiple_question(request):
     add_question(questionMap, Question_Type.Radio,
                  "Which user interface you like most?",
                  "Please select the UI you like most appears in the last section of experiment.",
-                 "",
-                 {"values":ui_list});
+                 "static/images/multiple_ui_names.png",
+                 {"values":ui_list},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you like that user interface?",
                  "Please write down your reason below.",
-                 "",
-                 {"defaultText": "Input your reason here."});
+                 "static/images/multiple_ui_names.png",
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     add_question(questionMap, Question_Type.Checkbox,
                  "Which user interface helps you make your decision?",
                  "Some of them might helps you to choose the selection much quicker, and it won't bother you to express your idea. Select <strong>all</strong> the user interfaces that you think they help you to make decisions much quicker.",
-                 "",
-                 {"values":ui_list});
+                 "static/images/multiple_ui_names.png",
+                 {"values":ui_list},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you think those user interfaces help you to make the decision?",
                  "Please write down your reason below. If you didn't select any user interface in the last question, please type 'Nothing' in the box.",
-                 "",
-                 {"defaultText": "Input your reason here."});
+                 "static/images/multiple_ui_names.png",
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     add_question(questionMap, Question_Type.Checkbox,
                  "Which user interface slows you down?",
                  "Some of them might slow you down to make the decision due to its design or your personal preference. Select <strong>all</strong> the user interfaces that you think they slow you down.",
-                 "",
-                 {"values":ui_list});
+                 "static/images/multiple_ui_names.png",
+                 {"values":ui_list},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you think those user interfaces slow you down?",
                  "Please write down your reason below. If you didn't select any user interface in the last question, please type 'Nothing' in the box.",
-                 "",
-                 {"defaultText": "Input your reason here."});
+                 "static/images/multiple_ui_names.png",
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     add_question(questionMap, Question_Type.Radio,
                  "Which user interface you think is the most complex?",
                  "Please select the UI you feel is the most complex among all these user interface.",
-                 "",
-                 {"values":ui_list});
+                 "static/images/multiple_ui_names.png",
+                 {"values":ui_list},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you like that user interface is the most complex?",
                  "Please write down your reason below.",
-                 "",
-                 {"defaultText": "Input your reason here."});
+                 "static/images/multiple_ui_names.png",
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     add_question(questionMap, Question_Type.Checkbox,
                  "Which user interface helps you make your decision?",
                  "Some of them might helps you to choose the selection much quicker, and it won't bother you to express your idea.",
-                 "",
-                 {"values":ui_list});
+                 "static/images/multiple_ui_names.png",
+                 {"values":ui_list},
+                 0);
 
     add_question(questionMap, Question_Type.Combo,
                  "Which widget would you prefer for providing response for a single image?",
                  "In some user interfaces, you were asking for choosing the score for the selected images. In the experiment, you should meet two kinds of widgets: heart rating and slider. Select the one you prefer to use.",
-                 "",
+                 "static/images/widgets_ui_names.png",
                  {"defaultText":"Your prefer widget",
                   "values":[["Heart Rating", "0"],
-                            ["Slider", "1"]]});
+                            ["Slider", "1"]]},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you prefer that rating widget?",
                  "Please write down your reason below.",
-                 "",
-                 {"defaultText": "Input your reason here."});
+                 "static/images/widgets_ui_names.png",
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     add_question(questionMap, Question_Type.Combo,
                  "Do you think the rating widget affect your choosing experience?",
@@ -681,13 +694,15 @@ def start_multiple_question(request):
                  "",
                  {"defaultText":"Answer",
                   "values": [["Yes", "1"],
-                             ["No", "0"]]});
+                             ["No", "0"]]},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you think the rating widget affect your experience or it not affect?",
                  "According to the answer you give to the last question, please express your reason below.",
                  "",
-                 {"defaultText": "Input your reason here."});
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     questionMap["questionInstructionTitle"]='\"Part 5 - Multiple Image Response UI Question\"';
     questionMap['questionInstructionText'] = '"This is the last part of the experiment. In this part, you have to answer several questions which related to the multiple images selection UI experiment section. These questions are important to the experiment and it will affect the result of the experiment. So please answer these questions seriously.</p><p>Click \'start\' when you are ready."';
@@ -716,38 +731,44 @@ def start_single_question(request):
     add_question(questionMap, Question_Type.Radio,
                  "Which user interface you like most?",
                  "Please select the UI you like most appears in the last section of experiment.",
-                 "",
-                 {"values":ui_list});
+                 "static/images/single_ui_names.png",
+                 {"values":ui_list},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you like that user interface?",
                  "Please write down your reason below.",
-                 "",
-                 {"defaultText": "Input your reason here."});
+                 "static/images/single_ui_names.png",
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     add_question(questionMap, Question_Type.Checkbox,
                  "Which user interface helps you make your decision?",
                  "Some of them might helps you to choose the selection much quicker, and it won't bother you to express your idea.",
-                 "",
-                 {"values":ui_list});
+                 "static/images/single_ui_names.png",
+                 {"values":ui_list},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you think those user interface help you to make the decision?",
                  "Please write down your reason below. If you didn't select any user interface, please type 'Nothing' in the box.",
-                 "",
-                 {"defaultText": "Input your reason here."});
+                 "static/images/single_ui_names.png",
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     add_question(questionMap, Question_Type.Checkbox,
                  "Which user interface makes you think it affects your expression?",
                  "Some of these user interface might limited you to express your idea of the image. If any of those exists, please select them below.",
-                 "",
-                 {"values":ui_list});
+                 "static/images/single_ui_names.png",
+                 {"values":ui_list},
+                 0);
 
     add_question(questionMap, Question_Type.Text,
                  "Why you think those user interface affect your expression?",
                  "Please write down your reason below. If you didn't select any user interface, please type 'Nothing' in the box.",
-                 "",
-                 {"defaultText": "Input your reason here."});
+                 "static/images/single_ui_names.png",
+                 {"defaultText": "Input your reason here."},
+                 1);
 
     questionMap["questionInstructionTitle"]='\"Part 3 - Single Image Response UI Question\"';
     questionMap['questionInstructionText'] = '"In this part, you have to answer several questions which related to the single image response UI experiment section. These questions are important to the experiment and it will affect the result of the experiment. So please answer these questions seriously.</p><p>Click \'start\' when you are ready."';
@@ -764,7 +785,8 @@ def generate_basic_question():
                  "Please input your ANU ID",
                  "Your ANU ID is assigned when you become a student or staff member at the University, and is in the format of u1234567",
                  "",
-                 {"defaultText": "Your ANU ID, e.g.: u1234567"});
+                 {"defaultText": "Your ANU ID, e.g.: u1234567"},
+                 0);
 
     add_question(questionMap,
                  Question_Type.Combo,
@@ -773,7 +795,8 @@ def generate_basic_question():
                  "",
                  {"defaultText":"Gender",
                   "values": [["Male", "0"],
-                             ["Female", "1"]]});
+                             ["Female", "1"]]},
+                 0);
 
     add_question(questionMap,
                  Question_Type.Slider,
@@ -782,7 +805,8 @@ def generate_basic_question():
                  "",
                  {"min" : 16,
                   "max" : 100,
-                  "label" : "My age is"});
+                  "label" : "My age is"},
+                 0);
 
     add_question(questionMap,
                  Question_Type.SearchCombo,
@@ -1187,14 +1211,16 @@ def generate_basic_question():
                              ["Non-Award Law (ANU College of Law)", "394"],
                              ["Non-Award Study Abroad Program (12 Months)", "395"],
                              ["Non-Award Study Abroad Program (6 Months)", "396"],
-                             ["Other", "397"]]});
+                             ["Other", "397"]]},
+                            0);
 
     add_question(questionMap,
                  Question_Type.Radio,
                  "Do you know Neo-Plasticism style painting?",
                  "It is also known as De Stijl. The following picture is one of the Neo-Plasticism style painting. Do you know this painting style before?",
                  "static/images/PM-CRBY.jpg",
-                 {"values": ["Yes", "No"]});
+                 {"values": ["Yes", "No"]},
+                 0);
 
     questionMap["questionInstructionTitle"]='\"Part 1 - Basic Questions\"';
     questionMap['questionInstructionText'] = '"In this section, you have to answer several questions which related to your personal information. Before you answer these questions, make sure that you have read, understood and signed the <i>Participant Information Sheet</i>. The following questions will collect your ANU ID, gender, age and college. </p><p>Click \'start\' when you are ready."';

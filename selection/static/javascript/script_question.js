@@ -36,6 +36,11 @@ $('#answer-checkbox-list').transition('hide');
 $('#next-button-area').transition('hide');
 $('#queation-area').transition('hide');
 
+//Check whether the object is string.
+function isString(obj) {
+    return Object.prototype.toString.call(obj)==="[object String]";
+}  
+
 //Finish button click.
 function onFinishClicked() {
     //Jump to the finish url.
@@ -216,9 +221,36 @@ function prepareAndShowQuestion() {
     questionImage=questionImages[questionIndex];
     questionExplain=questionExplains[questionIndex];
     questionSetting=questionSettings[questionIndex];
+    showPreviousAnswer=showPreviousAnswers[questionIndex];
     //Set the content of the widget.
     document.getElementById('question-text').innerHTML=questionText;
-    document.getElementById('question-explain').innerHTML=questionExplain;
+    // Check the previous answer switch.
+    if (showPreviousAnswer==1) {
+        questionPreviousAnswer = '';
+        if (isString(answerData[answerData.length-1])) {
+            questionPreviousAnswer = answerData[answerData.length-1];
+        }
+        else {
+            // It must be a list.
+            for (var i=0; i<answerData[answerData.length-1].length; i++) {
+                if (i!=0) {
+                    questionPreviousAnswer = questionPreviousAnswer + ", ";
+                }
+                questionPreviousAnswer = questionPreviousAnswer + questionSettings[questionIndex-1]["values"][answerData[answerData.length-1][i]];
+            }
+        }
+        //Check the preivous answer.
+        if (questionPreviousAnswer == "") {
+            questionPreviousAnswer = "</p><p>Your previous answer is empty.";
+        }
+        else {
+            questionPreviousAnswer = '</p><p>Your previous answer is: ' + questionPreviousAnswer;
+        }
+        document.getElementById('question-explain').innerHTML=questionExplain+questionPreviousAnswer;
+    }
+    else {
+        document.getElementById('question-explain').innerHTML=questionExplain;
+    }
     document.getElementById('question-images').setAttribute('src', questionImage);
     //Set the question widget.
     if(questionType==0) {
