@@ -16,6 +16,8 @@ var globalTries=5;
 var sliderHelper=0;
 var checkboxHelper=[];
 var finishedUrl="";
+//Next animation lock
+var nextAnimation=true;
 //Answer sheet.
 var answerData=[];
 //CSRF token
@@ -140,6 +142,12 @@ function onNextAnimationFinished() {
 }
 
 function onNextPressed() {
+    //Check the lock
+    if(nextAnimation) {
+        return;
+    }
+    //Set the lock.
+    nextAnimation=true;
     if(questionType==0) {
         //Combo box.
         answerData.push($('#answer-combo').dropdown('get text'));
@@ -387,6 +395,8 @@ function prepareAndShowQuestion() {
     if(questionType!=4) {
         nextButton.classList.add('disabled');
     }
+    //Reset the next button animation.
+    nextAnimation=false;
 }
 
 //Check question type

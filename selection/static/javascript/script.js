@@ -38,6 +38,7 @@ var csrftoken;
 var uid;
 var startTime;
 var pressNextTime;
+var nextAnimation=true;
 
 function eyeTribeTrack(frame) {
     frameData=JSON.parse(frame.dump());
@@ -80,6 +81,9 @@ function updateProgress() {
         $('#reading-count-down').transition({
             animation : 'fade left',
             onComplete : function() {
+                //Unlock the next button.
+                nextAnimation=false;
+                //Show the buttons.
                 $('#hint-text').transition('fade left');
                 if(testList[testIndex]==2 ||
                    testList[testIndex]==3 ||
@@ -204,7 +208,12 @@ function getUtcTime(currentTime) {
 }
 
 function onNextClick() {
-
+    //Check the lock first.
+    if(nextAnimation) {
+        return;
+    }
+    //Set the lock.
+    nextAnimation=true;
     //Save the click time.
     pressNextTime=new Date();
     //Check the current value is valid or not.
